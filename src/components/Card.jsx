@@ -1,20 +1,14 @@
 import React from 'react';
+import { Card as AntdCard } from 'antd';
 
-/**
- * A generic container card component.
- * @param {object} props
- * @param {React.ReactNode} props.children
- * @param {object} [props.style] - Inline style overrides.
- * @returns {JSX.Element}
- */
-export const Card = ({ children, style = {} }) => (
-  <div style={{
-    border: '1px solid black',
-    padding: '10px',
-    marginBottom: '10px',
-    backgroundColor: 'white',
-    ...style
-  }}>
+
+export const Card = ({ children, ...rest }) => (
+  <AntdCard
+    size="small"
+    style={{ marginBottom: '10px' }}
+    bodyStyle={{ padding: '10px' }} 
+    {...rest}
+  >
     {children}
-  </div>
+  </AntdCard>
 );

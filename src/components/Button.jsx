@@ -1,18 +1,13 @@
 import React from 'react';
+import { Button as AntdButton } from 'antd';
 
-export const Button = ({ children, onClick, style = {}, type = 'button' }) => (
-  <button 
-    type={type}
+export const Button = ({ children, onClick, type = 'button', btnType = 'default', ...rest }) => (
+  <AntdButton 
+    htmlType={type} 
     onClick={onClick}
-    style={{
-      backgroundColor: '#e0e0e0',
-      border: '1px solid black',
-      padding: '5px 10px',
-      cursor: 'pointer',
-      fontSize: '12px',
-      ...style
-    }}
+    type={btnType}
+    {...rest}
   >
     {children}
-  </button>
+  </AntdButton>
 );

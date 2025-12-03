@@ -12,16 +12,13 @@ const LoginModal = ({ visible, onClose }) => {
   const handleLogin = async (values) => {
     setLoading(true);
     
-    // Simulate API call delay
     setTimeout(() => {
       const { username, password } = values;
-      
-      // For now, accept any username and password
+    
       if (username && password) {
-        // Dispatch login action with user data
         dispatch(setCred({ 
           username: username,
-          id: Date.now(), // Simple ID generation
+          id: Date.now(), 
           loginTime: new Date().toISOString()
         }));
         
@@ -93,10 +90,6 @@ const LoginModal = ({ visible, onClose }) => {
             Login
           </Button>
         </Form.Item>
-
-        <div style={{ textAlign: 'center', fontSize: '0.85em', color: '#666' }}>
-          <p>Demo: Enter any username and password to login</p>
-        </div>
       </Form>
     </Modal>
   );

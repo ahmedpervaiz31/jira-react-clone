@@ -28,7 +28,7 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
         </div>
       }
       hoverable
-      bordered={false}
+      bordered={true}
       style={{ 
         width: '100%',
         minWidth: 280,
@@ -37,7 +37,8 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
         maxHeight: '80vh',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
+        borderRadius: 25,
+        boxShadow: '10 2px 2px rgba(0,0,0,0.08)'
       }}
       bodyStyle={{ padding: '12px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
     >

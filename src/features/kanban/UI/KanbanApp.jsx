@@ -16,7 +16,6 @@ export const KanbanApp = () => {
   const [addVisible, setAddVisible] = useState(false);
   const [addStatus, setAddStatus] = useState(null);
 
-  // Handlers
   const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
     const nextId = lastId + 1;
     const newTask = {
@@ -59,7 +58,6 @@ export const KanbanApp = () => {
     setAddVisible(false);
   };
 
-  // Pass all state and handlers to the presenter
   return (
     <KanbanView
       tasks={tasks}

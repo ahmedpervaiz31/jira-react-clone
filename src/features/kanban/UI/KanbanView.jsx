@@ -21,7 +21,15 @@ const KanbanView = ({
   onCloseAddModal,
 }) => {
   return (
-    <div style={{ padding: '20px', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div
+      style={{
+        padding: '20px',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
       <Title level={1} style={{ textAlign: 'center', marginBottom: '18px' }}>
         Kanban Board
       </Title>
@@ -50,6 +58,7 @@ const KanbanView = ({
         onClose={onCloseTaskDetail}
         onDelete={onDeleteTask}
       />
+
       <AddTaskModal
         visible={addVisible}
         status={addStatus}

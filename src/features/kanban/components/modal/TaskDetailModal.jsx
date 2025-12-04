@@ -31,9 +31,7 @@ export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
       footer={null}
       centered
       width={720}
-      maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
       modalRenderToBody={true}
-      bodyStyle={{ padding: 0 }}
     >
       <div className={styles.header}>
         <div className={styles.infoLeft}>

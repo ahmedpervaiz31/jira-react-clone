@@ -11,6 +11,10 @@
   overflow-y: auto;
 }
 
+.modal.ant-modal .ant-modal-container {
+  padding: none !important;
+}
+
 .modal.ant-modal .ant-modal-content {
   background-color: var(--bg-surface) !important;
   --ant-modal-content-padding: 0px !important;

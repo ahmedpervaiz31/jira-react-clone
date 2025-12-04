@@ -206,6 +206,10 @@ h1, h2, h3, h4, h5, h6 {
   background-color: transparent;
 }
 
+.ant-modal-container {
+  padding: 0 !important;
+}
+
 .ant-modal-content {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;

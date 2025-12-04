@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Tag, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import styles from './TaskCard.module.css';
 
 export const TaskCard = ({ task, onDelete, onOpenDetail }) => {
   return (
@@ -8,14 +9,13 @@ export const TaskCard = ({ task, onDelete, onOpenDetail }) => {
       size="small"
       hoverable
       bordered={false}
-      style={{ marginBottom: 8, cursor: 'pointer' }}
-      bodyStyle={{ padding: '8px' }}
+      className={styles.taskCard}
       onClick={() => onOpenDetail && onOpenDetail(task)}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className={styles.content}>
         <Tag color="blue">#{task.id}</Tag>
-        <div style={{ flex: 1 }}>{task.title}</div>
-        <div style={{ marginLeft: 8 }}>
+        <div className={styles.title}>{task.title}</div>
+        <div className={styles.actions}>
           <Button
             type="text"
             danger

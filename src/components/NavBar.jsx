@@ -4,11 +4,14 @@ import { Button } from 'antd';
 import { LogoutOutlined, LoginOutlined } from '@ant-design/icons';
 import { logOut } from '../features/auth/authSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
+import { useTheme } from '../store/hooks';
 import LoginModal from '../features/auth/components/LoginModal';
+import styles from './NavBar.module.css';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useAuth();
+  const { isDark, toggle } = useTheme();
   const [loginModalVisible, setLoginModalVisible] = useState(false);
 
   const handleLogout = () => {
@@ -18,15 +21,22 @@ const Navbar = () => {
 
   return (
     <>
-      <nav style={styles.navbar}>
-        <div style={styles.brand}>
-          <span style={styles.brandText}>Jira</span>
+      <nav className={styles.navbar}>
+        <div className={styles.brand}>
+          <span className={styles.brandText}>Jira</span>
         </div>
 
-        <div style={styles.links}>
+        <div className={styles.links}>
+          <button 
+            className={styles.themeToggle}
+            onClick={toggle}
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? '🌙 Dark' : '☀️ Light'}
+          </button>
           {isAuthenticated && (
             <>
-              <span style={styles.greeting}>Welcome {user.username}!</span>
+              <span className={styles.greeting}>Welcome {user.username}!</span>
               <Button 
                 type="primary" 
                 danger 
@@ -55,35 +65,6 @@ const Navbar = () => {
       />
     </>
   );
-};
-
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 24px',
-    backgroundColor: '#0052cc',
-    color: 'white',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
-  },
-  brand: {
-    fontSize: '1.4em',
-    fontWeight: 'bold',
-  },
-  brandText: {
-    cursor: 'pointer',
-    letterSpacing: '0.5px',
-  },
-  links: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  greeting: {
-    fontSize: '0.95em',
-    fontWeight: '500',
-  },
 };
 
 export default Navbar;

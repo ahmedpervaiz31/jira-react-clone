@@ -1,0 +1,137 @@
+.modal :global(.ant-modal-body),
+.modal :global(.ant-modal-header),
+.modal :global(.ant-modal-content) {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.modal :global(.ant-modal-body) {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal.ant-modal .ant-modal-content {
+  background-color: var(--bg-surface) !important;
+  --ant-modal-content-padding: 0px !important;
+  padding: 0px !important; 
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow);
+}
+
+.modal.ant-modal .ant-modal-body {
+    padding: 0 !important;
+    background-color: var(--bg-surface) !important;
+}
+
+.modal :global(.ant-modal-header) {
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.modal :global(.ant-modal-content) {
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  gap: 16px;
+}
+
+.infoLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0; 
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.metadataContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--text-primary);
+}
+
+.metadataRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+}
+
+.metadataRow :global(.ant-avatar) {
+  background-color: var(--text-secondary) !important;
+  color: var(--bg-surface) !important;
+  font-weight: 600;
+}
+
+.metadataRow :global(.ant-typography),
+.metadataRow :global(.ant-typography strong) {
+  color: var(--text-primary) !important;
+}
+
+.date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tagsRow :global(.ant-tag) {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.tagsRow :global(.ant-tag-has-color) {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--text-on-primary) !important;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.descriptionSection {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.descriptionSection :global(.ant-typography) {
+  color: var(--text-primary) !important;
+}
+
+.descriptionTitle {
+  color: var(--text-primary) !important;
+  margin-bottom: 12px !important;
+}
+
+.descriptionContent {
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.descriptionContent p {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+

@@ -1,34 +1,50 @@
 import React, { useState } from 'react';
-import { Modal, Input, Button, Form, message } from 'antd';
+import { Modal, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { setCred } from '../authSlice';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import styles from './LoginModal.module.css';
+
+const LoginSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(3, 'Username must be at least 3 characters')
+    .required('Please enter your username'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Please enter your password'),
+});
 
 const LoginModal = ({ visible, onClose }) => {
   const dispatch = useDispatch();
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (values) => {
+  const handleSubmit = (values, { resetForm, setSubmitting }) => {
     setLoading(true);
-    
+    setSubmitting(true);
+
     setTimeout(() => {
       const { username, password } = values;
-    
+
       if (username && password) {
-        dispatch(setCred({ 
-          username: username,
-          id: Date.now(), 
-          loginTime: new Date().toISOString()
-        }));
-        
+        dispatch(
+          setCred({
+            username,
+            id: Date.now(),
+            loginTime: new Date().toISOString(),
+          })
+        );
+
         message.success(`Welcome, ${username}!`);
-        form.resetFields();
+        resetForm();
         setLoading(false);
+        setSubmitting(false);
         onClose();
       } else {
         message.error('Please enter username and password');
         setLoading(false);
+        setSubmitting(false);
       }
     }, 500);
   };
@@ -43,54 +59,55 @@ const LoginModal = ({ visible, onClose }) => {
       width={400}
       maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleLogin}
-        autoComplete="off"
+      <Formik
+        initialValues={{ username: '', password: '' }}
+        validationSchema={LoginSchema}
+        onSubmit={handleSubmit}
       >
-        <Form.Item
-          name="username"
-          label="Username"
-          rules={[
-            { required: true, message: 'Please enter your username' },
-            { min: 3, message: 'Username must be at least 3 characters' }
-          ]}
-        >
-          <Input
-            placeholder="Enter your username"
-            prefix={<UserOutlined />}
-            size="large"
-          />
-        </Form.Item>
+        {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+          <form className={styles.form} onSubmit={handleSubmit} autoComplete="off">
+            <div className={styles.field}>
+              <label className={styles.label}>Username</label>
+              <Input
+                className={styles.input}
+                name="username"
+                placeholder="Enter your username"
+                prefix={<UserOutlined />}
+                size="large"
+                value={values.username}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.username && touched.username ? (
+                <div className={styles.error}>{errors.username}</div>
+              ) : null}
+            </div>
 
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            { required: true, message: 'Please enter your password' },
-            { min: 6, message: 'Password must be at least 6 characters' }
-          ]}
-        >
-          <Input.Password
-            placeholder="Enter your password"
-            prefix={<LockOutlined />}
-            size="large"
-          />
-        </Form.Item>
+            <div className={styles.field}>
+              <label className={styles.label}>Password</label>
+              <Input.Password
+                className={styles.input}
+                name="password"
+                placeholder="Enter your password"
+                prefix={<LockOutlined />}
+                size="large"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.password && touched.password ? (
+                <div className={styles.error}>{errors.password}</div>
+              ) : null}
+            </div>
 
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            block
-            size="large"
-          >
-            Login
-          </Button>
-        </Form.Item>
-      </Form>
+            <div className={styles.actions}>
+              <Button type="primary" htmlType="submit" loading={loading || isSubmitting} block size="large">
+                Login
+              </Button>
+            </div>
+          </form>
+        )}
+      </Formik>
     </Modal>
   );
 };

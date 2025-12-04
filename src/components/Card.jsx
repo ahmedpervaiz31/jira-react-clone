@@ -1,12 +1,12 @@
 import React from 'react';
 import { Card as AntdCard } from 'antd';
-
+import styles from './Card.module.css';
 
 export const Card = ({ children, ...rest }) => (
   <AntdCard
     size="small"
-    style={{ marginBottom: '10px' }}
-    bodyStyle={{ padding: '10px' }} 
+    className={styles.card}
+    bodyStyle={{ padding: 0 }}
     {...rest}
   >
     {children}

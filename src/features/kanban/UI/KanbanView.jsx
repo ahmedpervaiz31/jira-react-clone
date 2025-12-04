@@ -1,8 +1,9 @@
 import React from 'react';
 import { Row, Col, Typography } from 'antd';
 import { BoardColumn } from '../components/Columns';
-import { TaskDetailModal } from '../components/modals/TaskDetailModal';
-import { AddTaskModal } from '../components/modals/AddTaskModal';
+import { TaskDetailModal } from '../components/modal/TaskDetailModal'
+import { AddTaskModal } from '../components/modal/AddTaskModal';
+import styles from './KanbanView.module.css';
 
 const { Title } = Typography;
 
@@ -21,23 +22,16 @@ const KanbanView = ({
   onCloseAddModal,
 }) => {
   return (
-    <div
-      style={{
-        padding: '20px',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
-      <Title level={1} style={{ textAlign: 'center', marginBottom: '18px' }}>
+    <div className={styles.container}>
+      <Title level={1} className={styles.title}>
         Kanban Board
       </Title>
 
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', width: '100%' }}>
-        <Row gutter={16} justify="center" align="top" style={{ width: '100%' }}>
+      <div className={styles.boardScroll}>
+
+        <Row gutter={16} justify="center" align="top" className={styles.row}>
           {columnsConfig.map((col) => (
-            <Col key={col.id} span={8} style={{ marginBottom: '20px' }}>
+            <Col key={col.id} span={8} className={styles.column}>
               <BoardColumn
                 title={col.title}
                 status={col.id}

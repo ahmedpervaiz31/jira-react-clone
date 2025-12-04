@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { setCred, logOut } from '../features/auth/authSlice';
+import { toggleTheme, setTheme } from './themeSlice';
 
-// Custom hook for authentication state and actions
 export const useAuth = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -20,5 +20,24 @@ export const useAuth = () => {
     isAuthenticated,
     login,
     logout
+  };
+};
+
+export const useTheme = () => {
+  const dispatch = useDispatch();
+  const isDark = useSelector((state) => state.theme.isDark);
+  
+  const toggle = () => {
+    dispatch(toggleTheme());
+  };
+  
+  const setDark = (dark) => {
+    dispatch(setTheme(dark));
+  };
+  
+  return {
+    isDark,
+    toggle,
+    setDark,
   };
 };

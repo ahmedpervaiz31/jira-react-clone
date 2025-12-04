@@ -1,0 +1,294 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root,
+.light-mode {
+  --bg-primary: #ffffff;
+  --bg-surface: #f4f5f7;
+  --bg-input: #ffffff;
+  --text-primary: #172b4d;
+  --text-secondary: #626f86;
+  --text-subtle: #626f86;
+  --color-primary: #0052cc;
+  --color-error: #e94949;
+  --text-on-primary: #ffffff;
+  --border-subtle: #d9d9d9;
+  --border-color: var(--border-subtle);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode {
+  --bg-primary: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-input: #282c3f;
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --text-subtle: #a0a0a0;
+  --color-primary: #0052cc;
+  --color-error: #f45a5a;
+  --text-on-primary: #ffffff;
+  --border-subtle: #444444;
+  --border-color: var(--border-subtle);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Reset default margins for titles and headings */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  color: var(--text-primary) !important;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.kanban-column, .kanban-card {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+
+.app-container {
+  min-height: 100%;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.dark-mode .ant-layout {
+  background-color: var(--bg-primary);
+}
+
+.dark-mode .ant-layout-content {
+  background-color: var(--bg-surface);
+  margin: 0;
+  padding: 0;
+}
+
+.ant-layout {
+  background-color: var(--bg-primary);
+}
+
+.ant-layout-content {
+  background-color: var(--bg-surface);
+  margin: 0;
+  padding: 0;
+}
+
+.dark-mode .ant-card {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-mode .ant-card-head {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+.dark-mode .ant-modal-content {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.dark-mode .ant-modal-header {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+.ant-modal-content {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  padding: 0;
+}
+
+.ant-modal-header {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+  padding: 16px 24px;
+}
+
+.ant-modal-title {
+  color: var(--text-primary);
+}
+
+.ant-modal-body {
+  padding: 24px;
+  color: var(--text-primary);
+}
+
+.ant-modal-close-x {
+  color: var(--text-primary);
+}
+
+.ant-input,
+.ant-input-number,
+.ant-picker,
+.ant-input-textarea-wrapper textarea {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input::placeholder,
+.ant-textarea::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+.ant-input-affix-wrapper {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.ant-input-affix-wrapper input {
+  color: var(--text-primary) !important;
+}
+
+.ant-input-affix-wrapper-focused {
+  border-color: var(--color-primary) !important;
+}
+
+.dark-mode .ant-input,
+.dark-mode .ant-input-number,
+.dark-mode .ant-picker {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-mode .ant-input::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+.dark-mode .ant-textarea-textarea {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-mode .ant-picker-panel {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Modal wrapper and overlay fixes */
+.ant-modal {
+  z-index: 1000;
+}
+
+.ant-modal-wrap {
+  background-color: transparent;
+}
+
+.ant-modal-content {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  padding: 0 !important;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.15), 0 6px 16px 0 rgba(0, 0, 0, 0.15);
+}
+
+.ant-modal-header {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-color) !important;
+  padding: 16px 24px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.ant-modal-title {
+  color: var(--text-primary) !important;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+  color: var(--text-primary) !important;
+  background-color: var(--bg-surface) !important;
+}
+
+.ant-modal-close {
+  color: var(--text-primary) !important;
+}
+
+.ant-modal-close:hover {
+  color: var(--text-primary) !important;
+}
+
+.ant-modal-footer {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Form and Button styles */
+.ant-form-item-label > label {
+  color: var(--text-primary) !important;
+}
+
+.ant-form-item {
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-default {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.ant-btn-default:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.ant-btn-text {
+  color: var(--text-primary);
+}
+
+/* Avatar and Tag styles in dark mode */
+.ant-avatar {
+  background-color: var(--text-secondary) !important;
+}
+
+.ant-tag {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-tag-has-color {
+  border-color: transparent !important;
+}
+
+/* Message and notification styles */
+.ant-message-notice-content {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-notification-notice {
+  background-color: var(--bg-surface) !important;
+}

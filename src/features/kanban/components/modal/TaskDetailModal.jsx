@@ -5,7 +5,7 @@ import { TaskMetadata } from '../tasks/TaskMetadata';
 import { TaskStatusTags } from '../tasks/TaskStatusTags';
 import { TaskActions } from '../tasks/TaskActions';
 import { TaskDescription } from '../tasks/TaskDescription';
-import './TaskDetailModal.css';
+import styles from './TaskDetailModal.module.css';
 
 export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
   if (!task) return null;
@@ -25,18 +25,20 @@ export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
 
   return (
     <Modal
+      className={styles.modal}
       open={visible}
       onCancel={onClose}
       footer={null}
       centered
       width={720}
       maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
-      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
+      modalRenderToBody={true}
+      bodyStyle={{ padding: 0 }}
     >
-      <div className="task-detail-header">
-        <div className="task-detail-info-left">
-          <h3 className="task-detail-title">{task.title}</h3>
-          <div className="task-detail-metadata-container">
+      <div className={styles.header}>
+        <div className={styles.infoLeft}>
+          <h3 className={styles.title}>{task.title}</h3>
+          <div className={styles.metadataContainer}>
             <TaskMetadata task={task} />
             <TaskStatusTags task={task} />
           </div>

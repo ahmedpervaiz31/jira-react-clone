@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import KanbanApp from './features/kanban/UI/KanbanApp.jsx';
 import { Layout } from 'antd';
+import { useTheme } from './store/hooks';
+import styles from './App.module.css';
 
 const { Content } = Layout;
 
 export default function App() {
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark-mode');
+      document.documentElement.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.add('light-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [isDark]);
+
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#fff', overflow: 'hidden' }}>
+    <Layout className={styles.layout}>
       <Navbar />
-      <Content style={{ padding: '0 50px', marginTop: 16, height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column',  overflow: 'hidden' }}>
+      <Content className={styles.content}>
         <KanbanApp />
       </Content>
     </Layout>

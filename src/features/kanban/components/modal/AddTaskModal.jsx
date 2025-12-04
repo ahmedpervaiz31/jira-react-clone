@@ -35,8 +35,6 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
       footer={null}
       centered
       width={700}
-      bodyStyle={{ padding: 0 }}
-      maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <div className={styles.content}>
         <h3 className={styles.heading}>Add Task ({status})</h3>

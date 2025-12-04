@@ -28,18 +28,18 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
         </div>
       }
       hoverable
-      bordered={true}
     >
       <div className={styles.tasksList}>
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onDelete={() => onDeleteTask(task.id)} onOpenDetail={(t) => onOpenDetail && onOpenDetail(t)} />
+          <TaskCard key={task.id} task={task}
+            onDelete={() => onDeleteTask(task.id)}
+            onOpenDetail={(t) => onOpenDetail && onOpenDetail(t)} />
         ))}
       </div>
-
       <div className={styles.actions}>
         <Button type="primary" icon={<PlusOutlined />} 
             onClick={() => onOpenAdd && onOpenAdd(status)}>
-              Add Task
+                Add Task
         </Button>
       </div>
     </Card>

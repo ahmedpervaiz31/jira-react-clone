@@ -1,8 +1,0 @@
-.card {
-  margin-bottom: 10px;
-}
-
-.card :global(.ant-card-body) {
-  padding: 10px;
-}
-

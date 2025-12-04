@@ -1,3 +1,10 @@
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 32px;
+  padding-bottom: 8px;
+}
 .modal :global(.ant-modal-body),
 .modal :global(.ant-modal-header),
 .modal :global(.ant-modal-content) {
@@ -9,10 +16,6 @@
 .modal :global(.ant-modal-body) {
   max-height: 70vh;
   overflow-y: auto;
-}
-
-.modal.ant-modal .ant-modal-container {
-  padding: none !important;
 }
 
 .modal.ant-modal .ant-modal-content {

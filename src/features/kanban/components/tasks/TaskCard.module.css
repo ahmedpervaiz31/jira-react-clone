@@ -4,6 +4,15 @@
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.dark-mode .taskCard {
+  background-color: #23272f;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  border: 1px solid #2c2f36;
 }
 
 .taskCard :global(.ant-card-body) {

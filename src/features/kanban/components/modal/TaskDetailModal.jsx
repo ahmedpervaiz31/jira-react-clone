@@ -41,10 +41,13 @@ export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
             <TaskStatusTags task={task} />
           </div>
         </div>
-        <TaskActions onDelete={handleDelete} />
       </div>
 
       <TaskDescription description={task.description} />
+
+      <div className={styles.modalFooter}>
+        <TaskActions onDelete={handleDelete} />
+      </div>
     </Modal>
   );
 };

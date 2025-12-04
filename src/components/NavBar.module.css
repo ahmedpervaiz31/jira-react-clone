@@ -1,0 +1,56 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: var(--color-primary);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  font-size: 1.4em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-on-primary);
+}
+
+.brandText {
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--text-on-primary);
+}
+
+.greeting {
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.themeToggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: var(--text-on-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-size: 0.9em;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.themeToggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+

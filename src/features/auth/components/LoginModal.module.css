@@ -1,0 +1,41 @@
+:root {
+  --login-spacing: 12px;
+}
+
+.form {
+  display: block;
+  width: 100%;
+}
+
+.field {
+  margin-bottom: var(--login-spacing);
+}
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.input {
+  width: 100%;
+}
+
+.error {
+  color: var(--color-error);
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.actions {
+  margin-top: 4px;
+}
+
+/* small responsive tweak */
+@media (max-width: 420px) {
+  .label {
+    font-size: 12px;
+  }
+}

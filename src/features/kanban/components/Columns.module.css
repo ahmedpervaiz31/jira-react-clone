@@ -1,0 +1,56 @@
+.columnCard {
+  width: 100%;
+  min-width: 280px;
+  background-color: var(--bg-surface);
+  margin: 0 20px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 25px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.columnCard :global(.ant-card-head) {
+  background-color: var(--bg-surface);
+  border-color: var(--border-subtle);
+  border-radius: 25px 25px 0 0;
+}
+
+.columnCard :global(.ant-card-body) {
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+}
+
+.titleIcon {
+  font-size: 16px;
+}
+
+.titleText {
+  font-weight: 600;
+}
+
+.tasksList {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+

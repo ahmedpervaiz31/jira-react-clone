@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
-import { INITIAL_TASKS, COLUMNS_CONFIG } from '../utils/constants';
+import React, { useMemo, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { COLUMNS_CONFIG } from '../utils/constants';
 import KanbanView from './KanbanView';
+import { addTask, deleteTask } from '../kanbanSlice';
 
 export const KanbanApp = () => {
-  const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const tasks = useSelector((state) => state.kanban.tasks);
+  const dispatch = useDispatch();
 
-  const numericIds = INITIAL_TASKS.map((t) => parseInt(t.id, 10)).filter(Boolean);
-  const initialLastId = numericIds.length ? Math.max(...numericIds) : 0;
-  const [lastId, setLastId] = useState(initialLastId);
-  const [assignedIds, setAssignedIds] = useState(numericIds);
+  const lastId = useMemo(() => {
+    const numericIds = tasks.map((t) => parseInt(t.id, 10)).filter(Boolean);
+    return numericIds.length ? Math.max(...numericIds) : 0;
+  }, [tasks]);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
-
   const [addVisible, setAddVisible] = useState(false);
   const [addStatus, setAddStatus] = useState(null);
 
-  // Handlers
   const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
     const nextId = lastId + 1;
     const newTask = {
@@ -28,15 +29,11 @@ export const KanbanApp = () => {
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       createdAt: new Date().toISOString(),
     };
-    setTasks((prev) => [...prev, newTask]);
-    setLastId(nextId);
-    setAssignedIds((prev) => [...prev, nextId]);
+    dispatch(addTask(newTask));
   };
 
   const handleDeleteTask = (id) => {
-    const idNum = parseInt(id, 10);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-    setAssignedIds((prev) => prev.filter((n) => n !== idNum));
+    dispatch(deleteTask(id));
   };
 
   const openTaskDetail = (task) => {
@@ -59,7 +56,6 @@ export const KanbanApp = () => {
     setAddVisible(false);
   };
 
-  // Pass all state and handlers to the presenter
   return (
     <KanbanView
       tasks={tasks}

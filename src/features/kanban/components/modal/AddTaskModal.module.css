@@ -1,0 +1,48 @@
+.modal :global(.ant-modal-body),
+.modal :global(.ant-modal-header),
+.modal :global(.ant-modal-content) {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.modal :global(.ant-modal-header) {
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.modal :global(.ant-modal-content) {
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow);
+}
+
+.content {
+  color: var(--text-primary);
+}
+
+.heading {
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.datePicker {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.cancelButton {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--text-subtle) !important;
+}
+

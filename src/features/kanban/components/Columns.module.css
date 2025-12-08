@@ -24,6 +24,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0; /* Allow flex item to shrink */
 }
 
 .columnHeader {
@@ -43,8 +44,11 @@
 
 .tasksList {
   flex-grow: 1;
-  overflow-y: auto;
-  min-height: 0;
+  overflow-y: scroll; /* Use 'scroll' to reserve scrollbar space and prevent layout shift during drag */
+  min-height: 50px; /* Ensure minimum height for empty columns to allow dropping */
+  padding: 4px 0; /* Provide minimal vertical padding for empty state visibility */
+  min-width: 0; /* Prevent flex items from overflowing */
+  box-sizing: border-box; /* Ensure padding is included in height calculation */
 }
 
 .actions {
@@ -52,5 +56,12 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
+}
+
+.dragOver {
+  background-color: var(--bg-primary);
+  border: 2px dashed var(--color-primary);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 

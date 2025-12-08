@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { COLUMNS_CONFIG, migrateTasksOrder } from '../utils/constants';
 import KanbanView from './KanbanView';
-import { addTask, deleteTask, moveTask, setTasks } from '../kanbanSlice';
+import { addTask, deleteTask, moveTask, setTasks } from '../../../store/kanbanSlice';
 
 export const KanbanApp = () => {
   const tasks = useSelector((state) => state.kanban.tasks);

@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from '../features/auth/authSlice';
 import themeReducer from './themeSlice';
-import kanbanReducer from '../features/kanban/kanbanSlice';
+import kanbanReducer from './kanbanSlice';
 
 const themePersistConfig = {
   key: 'theme',

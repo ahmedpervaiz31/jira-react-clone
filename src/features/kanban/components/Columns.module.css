@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 0; /* Allow flex item to shrink */
+  min-height: 0;
 }
 
 .columnHeader {
@@ -44,11 +44,18 @@
 
 .tasksList {
   flex-grow: 1;
-  overflow-y: scroll; /* Use 'scroll' to reserve scrollbar space and prevent layout shift during drag */
-  min-height: 50px; /* Ensure minimum height for empty columns to allow dropping */
-  padding: 4px 0; /* Provide minimal vertical padding for empty state visibility */
-  min-width: 0; /* Prevent flex items from overflowing */
-  box-sizing: border-box; /* Ensure padding is included in height calculation */
+  overflow-y: scroll; 
+  min-height: 50px;
+  padding: 4px 0;
+  min-width: 0;
+  box-sizing: border-box;
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none; 
+    width: 0px;
+  }
 }
 
 .actions {

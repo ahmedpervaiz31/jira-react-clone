@@ -1,4 +1,5 @@
 import React from 'react';
+import { Droppable } from '@hello-pangea/dnd';
 import { TaskCard } from './tasks/TaskCard';
 import { Card, Button } from 'antd';
 import { ProfileOutlined, LoadingOutlined, CheckCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -29,13 +30,26 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
       }
       hoverable
     >
-      <div className={styles.tasksList}>
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task}
-            onDelete={() => onDeleteTask(task.id)}
-            onOpenDetail={(t) => onOpenDetail && onOpenDetail(t)} />
-        ))}
-      </div>
+      <Droppable droppableId={status}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`${styles.tasksList} ${snapshot.isDraggingOver ? styles.dragOver : ''}`}
+          >
+            {tasks.map((task, index) => (
+              <TaskCard 
+                key={task.id} 
+                task={task}
+                index={index}
+                onDelete={() => onDeleteTask(task.id)}
+                onOpenDetail={(t) => onOpenDetail && onOpenDetail(t)} 
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       <div className={styles.actions}>
         <Button type="primary" icon={<PlusOutlined />} 
             onClick={() => onOpenAdd && onOpenAdd(status)}>

@@ -1,5 +1,5 @@
 .taskCard {
-  margin-bottom: 8px;
+  margin-bottom: 0;
   cursor: pointer;
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -7,6 +7,11 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
+}
+
+/* Wrapper div for drag and drop */
+.draggableWrapper {
+  margin-bottom: 8px;
 }
 
 .dark-mode .taskCard {
@@ -34,5 +39,14 @@
   margin-left: 8px;
   display: flex;
   align-items: center;
+}
+
+.dragging {
+  opacity: 0.8;
+  cursor: grabbing;
+}
+
+.dragging .taskCard {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 

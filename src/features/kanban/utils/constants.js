@@ -115,6 +115,11 @@ export const INITIAL_BOARDS = [
   }
 ];
 
+export const APP_ROUTES = {
+  HOME: '/',
+  KANBAN_BOARD: '/kanban', 
+};
+
 export const migrateTasksOrder = (tasks) => {
   if (!tasks || tasks.length === 0) return tasks;
   

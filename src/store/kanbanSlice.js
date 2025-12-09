@@ -39,12 +39,31 @@ const kanbanSlice = createSlice({
         board.tasks = tasks;
       }
     },
-    // to do: add reducer for board adding/deleting
+    addBoard: (state, action) => {
+      const { id, name } = action.payload; 
+      const newBoard = {
+        id: id,           
+        name: name || 'Untitled Board',
+        tasks: [],
+      };
+      state.boards.push(newBoard);
+    },
+    deleteBoard: (state, action) => {
+      const { boardId } = action.payload;
+      state.boards = state.boards.filter(b => b.id !== boardId);
+    },
   },
 });
 
 
-export const { addTask, deleteTask, setTasks, moveTask } = kanbanSlice.actions;
+export const { 
+    addTask, 
+    deleteTask, 
+    setTasks, 
+    moveTask, 
+    addBoard,  
+    deleteBoard 
+} = kanbanSlice.actions;
 
 export const selectBoardById = (state, boardId) => 
     state.kanban.boards.find(b => b.id === boardId);

@@ -11,6 +11,26 @@
   margin-bottom: 2rem;
 }
 
+.inputContainer {
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+
+.fullWidth {
+  width: 100%;
+}
+.boardRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.boardLinkWrapper {
+  flex: 1;
+}
+
 .boards {
   display: flex;
   flex-direction: column;

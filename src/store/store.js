@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import authReducer from '../features/auth/authSlice';
+import authReducer from './authSlice';
 import themeReducer from './themeSlice';
 import kanbanReducer from './kanbanSlice';
 
@@ -14,7 +14,7 @@ const themePersistConfig = {
 const kanbanPersistConfig = {
   key: 'kanban',
   storage,
-  whitelist: ['tasks'],
+  whitelist: ['boards'],
 };
 
 const authPersistConfig = {

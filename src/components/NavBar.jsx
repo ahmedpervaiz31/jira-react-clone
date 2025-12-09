@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'antd';
 import { LogoutOutlined, LoginOutlined } from '@ant-design/icons';
-import { logOut } from '../features/auth/authSlice';
+import { logOut } from '../store/authSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { useTheme } from '../store/hooks';
 import LoginModal from '../features/auth/components/LoginModal';

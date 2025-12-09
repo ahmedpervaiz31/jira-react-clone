@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, message } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setCred } from '../authSlice';
+import { setCred } from '../../../store/authSlice';
 import LoginForm from './LoginForm';
 
 const LoginModal = ({ visible, onClose }) => {

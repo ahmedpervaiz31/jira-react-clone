@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setCred, logOut } from '../features/auth/authSlice';
+import { setCred, logOut } from './authSlice';
 import { toggleTheme, setTheme } from './themeSlice';
 
 export const useAuth = () => {

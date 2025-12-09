@@ -23,7 +23,6 @@ const KanbanView = ({
   onCloseAddModal,
   onDragEnd,
 }) => {
-  // Helper function to get sorted tasks for a column
   const getTasksForColumn = (status) => {
     return tasks
       .filter((t) => t.status === status)

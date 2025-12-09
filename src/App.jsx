@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
-import KanbanApp from './features/kanban/UI/KanbanApp.jsx';
+
 import { Layout } from 'antd';
 import { useTheme } from './store/hooks';
 import styles from './App.module.css';
+import AppRoutes from './routes/AppRoutes.jsx';
 
 const { Content } = Layout;
 
@@ -24,7 +25,7 @@ export default function App() {
     <Layout className={styles.layout}>
       <Navbar />
       <Content className={styles.content}>
-        <KanbanApp />
+        <AppRoutes />
       </Content>
     </Layout>
   );

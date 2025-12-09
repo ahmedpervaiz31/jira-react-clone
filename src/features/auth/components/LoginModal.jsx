@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, message } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setCred } from '../authSlice';
+import { setCred } from '../../../store/authSlice';
 import LoginForm from './LoginForm';
 
 const LoginModal = ({ visible, onClose }) => {
@@ -41,7 +41,6 @@ const LoginModal = ({ visible, onClose }) => {
       footer={null}
       centered
       width={400}
-      maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <LoginForm onSubmit={handleSubmit} />
     </Modal>

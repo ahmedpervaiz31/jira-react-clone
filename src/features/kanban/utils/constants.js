@@ -4,63 +4,120 @@ export const COLUMN_TYPES = {
   DONE: 'done',
 };
 
-export const INITIAL_TASKS = [
+export const INITIAL_BOARDS = [
   {
-    id: '1',
-    title: 'Set up repo',
-    status: COLUMN_TYPES.TODO,
-    assignedTo: 'Person A',
-    createdAt: '2025-11-20T09:15:00.000Z',
-    dueDate: null,
-    description: '<p>A</p>',
-    order: 0
+    id: 'board1',
+    name: 'Frontend Tasks',
+    tasks: [
+      {
+        id: '1',
+        title: 'Set up repo',
+        status: COLUMN_TYPES.TODO,
+        assignedTo: 'Person A',
+        createdAt: '2025-11-20T09:15:00.000Z',
+        dueDate: null,
+        description: '<p>Set up the frontend repository</p>',
+        order: 0
+      },
+      {
+        id: '2',
+        title: 'Install dependencies',
+        status: COLUMN_TYPES.TODO,
+        assignedTo: 'Person B',
+        createdAt: '2025-11-20T10:00:00.000Z',
+        dueDate: null,
+        description: '<p>Install React, Redux, etc.</p>',
+        order: 1
+      },
+      {
+        id: '3',
+        title: 'Create UI mockups',
+        status: COLUMN_TYPES.IN_PROGRESS,
+        assignedTo: 'Person C',
+        createdAt: '2025-11-21T14:30:00.000Z',
+        dueDate: '2025-11-30',
+        description: '<p>Design the main screens</p>',
+        order: 0
+      }
+    ]
   },
   {
-    id: '2',
-    title: 'Install dependencies',
-    status: COLUMN_TYPES.TODO,
-    assignedTo: 'Person B',
-    createdAt: '2025-11-20T10:00:00.000Z',
-    dueDate: null,
-    description: '<p>B</p>',
-    order: 1
+    id: 'board2',
+    name: 'Backend Tasks',
+    tasks: [
+      {
+        id: '1',
+        title: 'Set up backend repo',
+        status: COLUMN_TYPES.TODO,
+        assignedTo: 'Person X',
+        createdAt: '2025-11-20T09:15:00.000Z',
+        dueDate: null,
+        description: '<p>Set up the backend repository</p>',
+        order: 0
+      },
+      {
+        id: '2',
+        title: 'Design database schema',
+        status: COLUMN_TYPES.IN_PROGRESS,
+        assignedTo: 'Person Y',
+        createdAt: '2025-11-21T14:30:00.000Z',
+        dueDate: '2025-11-30',
+        description: '<p>Design DB for users and tasks</p>',
+        order: 0
+      },
+      {
+        id: '3',
+        title: 'Implement API',
+        status: COLUMN_TYPES.DONE,
+        assignedTo: 'Person Z',
+        createdAt: '2025-11-22T09:00:00.000Z',
+        dueDate: null,
+        description: '<p>REST API for tasks</p>',
+        order: 0
+      }
+    ]
   },
   {
-    id: '3',
-    title: 'Design database schema',
-    status: COLUMN_TYPES.IN_PROGRESS,
-    assignedTo: 'Person C',
-    createdAt: '2025-11-21T14:30:00.000Z',
-    dueDate: '2025-11-30',
-    description: '<p>C</p>',
-    order: 0
-  },
-  {
-    id: '4',
-    title: 'Configure Webpack',
-    status: COLUMN_TYPES.IN_PROGRESS,
-    assignedTo: 'Person D',
-    createdAt: '2025-11-22T09:00:00.000Z',
-    dueDate: null,
-    description: '<p>D</p>',
-    order: 1
-  },
-  {
-    id: '5',
-    title: 'Drink coffee',
-    status: COLUMN_TYPES.DONE,
-    assignedTo: 'Person E',
-    createdAt: '2025-11-19T08:00:00.000Z',
-    dueDate: null,
-    description: '<p>E</p>',
-    order: 0
-  },
+    id: 'board3',
+    name: 'DevOps Tasks',
+    tasks: [
+      {
+        id: '1',
+        title: 'Set up CI/CD',
+        status: COLUMN_TYPES.TODO,
+        assignedTo: 'DevOps A',
+        createdAt: '2025-11-20T09:15:00.000Z',
+        dueDate: null,
+        description: '<p>Configure GitHub Actions</p>',
+        order: 0
+      },
+      {
+        id: '2',
+        title: 'Write deployment scripts',
+        status: COLUMN_TYPES.IN_PROGRESS,
+        assignedTo: 'DevOps B',
+        createdAt: '2025-11-21T14:30:00.000Z',
+        dueDate: '2025-11-30',
+        description: '<p>Automate deployment</p>',
+        order: 0
+      },
+      {
+        id: '3',
+        title: 'Monitor production',
+        status: COLUMN_TYPES.DONE,
+        assignedTo: 'DevOps C',
+        createdAt: '2025-11-22T09:00:00.000Z',
+        dueDate: null,
+        description: '<p>Set up monitoring tools</p>',
+        order: 0
+      }
+    ]
+  }
 ];
 
 export const migrateTasksOrder = (tasks) => {
   if (!tasks || tasks.length === 0) return tasks;
   
-  // Group tasks by status
   const tasksByStatus = {};
   tasks.forEach(task => {
     if (!tasksByStatus[task.status]) {
@@ -69,19 +126,15 @@ export const migrateTasksOrder = (tasks) => {
     tasksByStatus[task.status].push(task);
   });
   
-  // Add order field to tasks that don't have it
   return tasks.map(task => {
     if (task.order !== undefined && task.order !== null) {
       return task;
     }
     
-    // Find tasks in same status group and assign order based on creation time or position
     const sameStatusTasks = tasksByStatus[task.status] || [];
     const sortedTasks = sameStatusTasks.sort((a, b) => {
-      // First, tasks with order come first
       if (a.order !== undefined && b.order === undefined) return -1;
       if (a.order === undefined && b.order !== undefined) return 1;
-      // If both have or don't have order, sort by createdAt
       return new Date(a.createdAt) - new Date(b.createdAt);
     });
     

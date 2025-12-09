@@ -41,7 +41,6 @@ const LoginModal = ({ visible, onClose }) => {
       footer={null}
       centered
       width={400}
-      maskStyle={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.45)' }}
     >
       <LoginForm onSubmit={handleSubmit} />
     </Modal>

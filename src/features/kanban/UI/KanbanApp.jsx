@@ -1,11 +1,15 @@
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG, migrateTasksOrder } from '../utils/constants';
 import KanbanView from './KanbanView';
-import { addTask, deleteTask, moveTask, setTasks } from '../../../store/kanbanSlice';
+import { addTask, deleteTask, moveTask, setTasks, selectBoardById } from '../../../store/kanbanSlice';
 
 export const KanbanApp = () => {
-  const tasks = useSelector((state) => state.kanban.tasks);
+  const { kanbanId } = useParams();
+  const board = useSelector((state) => selectBoardById(state, kanbanId));
+  const tasks = board ? board.tasks : [];
   const dispatch = useDispatch();
 
   const lastId = useMemo(() => {
@@ -18,15 +22,13 @@ export const KanbanApp = () => {
   const [addVisible, setAddVisible] = useState(false);
   const [addStatus, setAddStatus] = useState(null);
 
+
   const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
     const nextId = lastId + 1;
-    
-    // Calculate order for new task (should be last in the column)
     const tasksInColumn = tasks.filter(t => t.status === status);
     const maxOrder = tasksInColumn.length > 0 
       ? Math.max(...tasksInColumn.map(t => t.order !== undefined ? t.order : -1))
       : -1;
-    
     const newTask = {
       id: nextId.toString(),
       title,
@@ -37,11 +39,11 @@ export const KanbanApp = () => {
       createdAt: new Date().toISOString(),
       order: maxOrder + 1,
     };
-    dispatch(addTask(newTask));
+    dispatch(addTask({ boardId: kanbanId, task: newTask }));
   };
 
   const handleDeleteTask = (id) => {
-    dispatch(deleteTask(id));
+    dispatch(deleteTask({ boardId: kanbanId, taskId: id }));
   };
 
   const openTaskDetail = (task) => {
@@ -68,9 +70,9 @@ export const KanbanApp = () => {
     const tasksNeedingMigration = tasks.some(task => task.order === undefined || task.order === null);
     if (tasksNeedingMigration && tasks.length > 0) {
       const migratedTasks = migrateTasksOrder(tasks);
-      dispatch(setTasks(migratedTasks));
+      dispatch(setTasks({ boardId: kanbanId, tasks: migratedTasks }));
     }
-  }, []); 
+  }, [kanbanId]);
 
   const handleDragEnd = (result) => {
     const { source, destination, draggableId } = result;
@@ -145,9 +147,12 @@ export const KanbanApp = () => {
       });
     }
 
-    dispatch(moveTask({ tasks: updatedTasks }));
+    dispatch(moveTask({ boardId: kanbanId, tasks: updatedTasks }));
   };
 
+  if (!board) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Board not found.</div>;
+  }
   return (
     <KanbanView
       tasks={tasks}

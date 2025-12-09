@@ -20,6 +20,8 @@
 .brandText {
   letter-spacing: 0.5px;
   cursor: pointer;
+  color: var(--text-on-primary) !important;
+  text-decoration: none;
 }
 
 .links {

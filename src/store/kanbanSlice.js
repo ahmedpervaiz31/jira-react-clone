@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { INITIAL_TASKS } from './utils/constants';
+import { INITIAL_TASKS } from '../features/kanban/utils/constants';
 
 const initialState = {
-  tasks: [], // will be hydrated by redux-persist
+  tasks: INITIAL_TASKS, // Initial tasks, will be hydrated by redux-persist if present
 };
 
 const kanbanSlice = createSlice({
@@ -18,12 +18,14 @@ const kanbanSlice = createSlice({
     setTasks: (state, action) => {
       state.tasks = action.payload;
     },
-    // to be used for dnd
-    updateTasksOrder: (state, action) => {
-      state.tasks = action.payload;
+    // updateTasksOrder: (state, action) => {
+    //   state.tasks = action.payload;
+    // },
+    moveTask: (state, action) => {
+      state.tasks = action.payload.tasks;
     },
   },
 });
 
-export const { addTask, deleteTask, setTasks, updateTasksOrder } = kanbanSlice.actions;
+export const { addTask, deleteTask, setTasks, updateTasksOrder, moveTask } = kanbanSlice.actions;
 export default kanbanSlice.reducer;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Popconfirm } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { APP_ROUTES } from '../../kanban/utils/constants'; 
+import { APP_ROUTES } from '../../../utils/constants'; 
 import styles from '../Home.module.css';
 
 const BoardItem = ({ board, onDelete }) => {

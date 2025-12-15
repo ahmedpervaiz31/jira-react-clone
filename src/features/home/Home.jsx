@@ -1,33 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../auth/hooks/useAuth';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectBoards, addBoard, deleteBoard } from '../../store/kanbanSlice';
+import { selectBoards, fetchBoards, createBoard, deleteBoardAsync } from '../../store/kanbanSlice';
 import styles from './Home.module.css';
 
 import LoginView from './components/LoginView';
 import CreateBoard from './components/CreateBoard';
 import BoardItem from './components/BoardItem';
 
+const makeBoardKey = (name) => {
+  if (!name) return `B${Date.now()}`;
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+};
+
 const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const boards = useSelector(selectBoards);
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
-const handleCreateBoard = (boardName) => {
-  const maxId = boards.reduce((max, board) => {
-    const idNum = parseInt(board.id.replace('board', ''), 10);
-    return isNaN(idNum) ? max : Math.max(max, idNum);
-  }, 0);
+  useEffect(() => {
+    if (isAuthenticated) dispatch(fetchBoards());
+  }, [isAuthenticated]);
 
-  const nextId = maxId + 1;
-  const newBoardId = `board${nextId}`;
-
-  dispatch(addBoard({ id: newBoardId, name: boardName }));
-};
+  const handleCreateBoard = (boardName) => {
+    const key = makeBoardKey(boardName) + Math.floor(Math.random() * 90 + 10);
+    dispatch(createBoard({ name: boardName, key }));
+  };
 
   const handleDeleteBoard = (e, boardId) => {
     e.preventDefault();
-    dispatch(deleteBoard({ boardId }));
+    dispatch(deleteBoardAsync(boardId));
   };
 
   return (

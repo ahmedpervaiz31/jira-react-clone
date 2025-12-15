@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { COLUMNS_CONFIG, migrateTasksOrder } from '../utils/constants';
+import { COLUMNS_CONFIG, migrateTasksOrder } from '../../../utils/constants';
 import KanbanView from './KanbanView';
-import { addTask, deleteTask, moveTask, setTasks, selectBoardById } from '../../../store/kanbanSlice';
+import { selectBoardById, createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal } from '../../../store/kanbanSlice';
 
 export const KanbanApp = () => {
   const { kanbanId } = useParams();
@@ -23,26 +23,26 @@ export const KanbanApp = () => {
 
 
   const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
-    const nextId = lastId + 1;
     const tasksInColumn = tasks.filter(t => t.status === status);
-    const maxOrder = tasksInColumn.length > 0 
-      ? Math.max(...tasksInColumn.map(t => t.order !== undefined ? t.order : -1))
+    const maxOrder = tasksInColumn.length > 0
+      ? Math.max(...tasksInColumn.map(t => (t.order !== undefined ? t.order : -1)))
       : -1;
-    const newTask = {
-      id: nextId.toString(),
+
+    const payload = {
       title,
       status,
+      boardId: kanbanId,
       assignedTo,
       description,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      createdAt: new Date().toISOString(),
       order: maxOrder + 1,
     };
-    dispatch(addTask({ boardId: kanbanId, task: newTask }));
+
+    dispatch(createTask(payload));
   };
 
   const handleDeleteTask = (id) => {
-    dispatch(deleteTask({ boardId: kanbanId, taskId: id }));
+    dispatch(deleteTaskAsync({ taskId: id }));
   };
 
   const openTaskDetail = (task) => {
@@ -146,8 +146,24 @@ export const KanbanApp = () => {
       });
     }
 
-    dispatch(moveTask({ boardId: kanbanId, tasks: updatedTasks }));
+    // update local state immediately
+    dispatch(setTasksLocal({ boardId: kanbanId, tasks: updatedTasks }));
+    // Persist order/status updates for tasks
+    updatedTasks.forEach((t) => {
+      dispatch(moveTaskAsync({ taskId: t.id, status: t.status, order: t.order }));
+    });
   };
+
+  useEffect(() => {
+    // When boards are loaded from the central store, they contain tasks.
+    // Ensure local state mirrors the board's tasks.
+    const boardState = useSelector((state) => selectBoardById(state, kanbanId));
+    useEffect(() => {
+      if (boardState) {
+        dispatch(setTasksLocal({ boardId: kanbanId, tasks: boardState.tasks || [] }));
+      }
+    }, [boardState, kanbanId]);
+  }, [kanbanId]);
 
   if (!board) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Board not found.</div>;

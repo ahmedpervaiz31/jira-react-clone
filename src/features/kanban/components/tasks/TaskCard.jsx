@@ -22,7 +22,7 @@ export const TaskCard = ({ task, index, onDelete, onOpenDetail }) => {
             onClick={() => onOpenDetail && onOpenDetail(task)}
           >
             <div className={styles.content}>
-              <Tag color="blue">#{task.id}</Tag>
+              <Tag color="blue">#{task.displayId ? task.displayId : String(task.id).slice(0,6)}</Tag>
               <div className={styles.title}>{task.title}</div>
               <div className={styles.actions}>
                 <Button

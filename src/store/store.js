@@ -11,22 +11,10 @@ const themePersistConfig = {
   whitelist: ['isDark'],
 };
 
-const kanbanPersistConfig = {
-  key: 'kanban',
-  storage,
-  whitelist: ['boards'],
-};
-
-const authPersistConfig = {
-  key: 'auth',
-  storage,
-  whitelist: ['user', 'isAuthenticated'],
-}; 
-
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
+  auth: authReducer,
   theme: persistReducer(themePersistConfig, themeReducer),
-  kanban: persistReducer(kanbanPersistConfig, kanbanReducer),
+  kanban: kanbanReducer,
 });
 
 export const store = configureStore({

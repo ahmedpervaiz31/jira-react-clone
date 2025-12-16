@@ -15,14 +15,13 @@ const Home = () => {
 
   useEffect(() => {
     if (isAuthenticated) dispatch(fetchBoards());
-  }, [isAuthenticated]);
+  }, [isAuthenticated, dispatch]);
 
   const handleCreateBoard = (boardName) => {
-    dispatch(createBoard({ name: boardName}));
+    dispatch(createBoard({ name: boardName }));
   };
 
-  const handleDeleteBoard = (e, boardId) => {
-    e.preventDefault();
+  const handleDeleteBoard = (boardId) => {
     dispatch(deleteBoardAsync(boardId));
   };
 
@@ -34,7 +33,9 @@ const Home = () => {
         <>
           <h1 className={styles.heading}>Welcome, {user?.username || 'User'}!</h1>
           
-          <CreateBoard onCreate={handleCreateBoard} />
+          <div className={styles.inputContainer}>
+            <CreateBoard onCreate={handleCreateBoard} />
+          </div>
 
           <div className={styles.boards}>
             {boards.map(board => (

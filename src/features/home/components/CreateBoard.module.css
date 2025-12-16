@@ -17,6 +17,15 @@
     font-weight: 600;
 }
 
+.Btn {
+    background-color: var(--color-primary) !important;
+}
+
+.Btn:hover {
+    opacity: 0.6; 
+    background-color: var(--color-primary) !important;
+}
+
 .field {
     font-size: 1rem;
     padding: 8px 11px;
@@ -28,8 +37,7 @@
     gap: 1rem;
     margin-top: 1rem;
 }
-.primaryButton {
-    background-color: #1890ff;
-    color: white;
-    border: none;
+
+.ant-btn.ant-btn-color-primary {
+  --ant-btn-color-base: var(--color-primary) !important;
 }

@@ -11,11 +11,6 @@ export const KanbanApp = () => {
   const tasks = board ? board.tasks : [];
   const dispatch = useDispatch();
 
-  const lastId = useMemo(() => {
-    const numericIds = tasks.map((t) => parseInt(t.id, 10)).filter(Boolean);
-    return numericIds.length ? Math.max(...numericIds) : 0;
-  }, [tasks]);
-
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);

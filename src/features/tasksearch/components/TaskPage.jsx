@@ -1,9 +1,13 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Card, Button, Tag } from 'antd';
+import { Button } from 'antd';
 import { selectAllTasksFlattened } from '../../../store/kanbanSlice';
 import styles from './TaskPage.module.css';
+
+import { TaskMetadata } from '../../kanban/components/tasks/TaskMetadata';
+import { TaskStatusTags } from '../../kanban/components/tasks/TaskStatusTags';
+import { TaskDescription } from '../../kanban/components/tasks/TaskDescription';
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -17,18 +21,31 @@ const TaskPage = () => {
 
   return (
     <div className={styles.container}>
-      <Card className={styles.card} title={<>
-        <Tag color="blue">{task.displayId || String(task.id).slice(0,6)}</Tag> {task.title}
-      </>}>
-        <div className={styles.meta}><b>Status:</b> <Tag>{task.status}</Tag></div>
-        <div className={styles.meta}><b>Board:</b> {task.boardName} <Tag>{task.boardKey}</Tag></div>
-        {task.assignedTo && <div className={styles.meta}><b>Assigned To:</b> {task.assignedTo}</div>}
-        {task.description && <div className={styles.meta}><b>Description:</b> {task.description}</div>}
-        {task.dueDate && <div className={styles.meta}><b>Due Date:</b> {new Date(task.dueDate).toLocaleDateString()}</div>}
-        <div className={styles.actions}>
-          <Button onClick={() => navigate(-1)}>Back</Button>
+      <div className={styles.card}>
+        
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>{task.title}</h1>
+            <div className={styles.metadataContainer}>
+              <TaskMetadata task={task} />
+              <TaskStatusTags task={task} />
+            </div>
+          </div>
         </div>
-      </Card>
+
+        <div className={styles.divider} />
+
+        <div className={styles.descriptionSection}>
+          <TaskDescription description={task.description} />
+        </div>
+
+        <div className={styles.footer}>
+          <Button onClick={() => navigate(-1)} size="large">
+            Back
+          </Button>
+        </div>
+
+      </div>
     </div>
   );
 };

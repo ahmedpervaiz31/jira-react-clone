@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Modal } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { APP_ROUTES } from '../../../utils/constants'; 
 import styles from '../Home.module.css';
 
@@ -17,20 +17,25 @@ const BoardItem = ({ board, onDelete }) => {
         </Button>
       </Link>
 
-      <Popconfirm
-        title="Delete this board?"
-        description="This action cannot be undone."
-        onConfirm={(e) => onDelete(e, board.id)}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Button 
-          danger 
-          type="default" 
-          size="large" 
-          icon={<DeleteOutlined />}
-        />
-      </Popconfirm>
+      <Button
+        danger
+        type="secondary"
+        size="large"
+        icon={<DeleteOutlined />}
+        onClick={() => {
+          Modal.confirm({
+            title: 'Delete this board?',
+            icon: <ExclamationCircleOutlined />,
+            content: 'This action cannot be undone.',
+            okType: 'danger',
+            okText: 'Delete',
+            cancelText: 'Cancel',
+            onOk() {
+              onDelete && onDelete(board.id);
+            }
+          });
+        }}
+      />
     </div>
   );
 };

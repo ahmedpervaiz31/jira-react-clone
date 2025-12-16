@@ -12,9 +12,6 @@ const RegisterSchema = Yup.object().shape({
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Please enter a password'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Please confirm your password'),
 });
 
 const RegisterForm = ({ onSubmit }) => {
@@ -27,7 +24,7 @@ const RegisterForm = ({ onSubmit }) => {
 
   return (
     <Formik
-      initialValues={{ username: '', password: '', confirmPassword: '' }}
+      initialValues={{ username: '', password: '' }}
       validationSchema={RegisterSchema}
       onSubmit={handleSubmit}
     >

@@ -9,7 +9,7 @@ const LoginView = () => {
   return (
     <>
       <h1 className={styles.heading}>Log in to Jira Kanban</h1>
-      <Button type="primary" size="large" onClick={() => setLoginVisible(true)}>
+      <Button type="primary" size="large" className={styles.Btn} onClick={() => setLoginVisible(true)}>
         Log In
       </Button>
       <LoginModal visible={loginVisible} onClose={() => setLoginVisible(false)} />

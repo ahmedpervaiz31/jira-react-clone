@@ -51,7 +51,7 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
         )}
       </Droppable>
       <div className={styles.actions}>
-        <Button type="primary" icon={<PlusOutlined />} 
+        <Button type="primary" className={styles.addButton} icon={<PlusOutlined />} 
             onClick={() => onOpenAdd && onOpenAdd(status)}>
                 Add Task
         </Button>

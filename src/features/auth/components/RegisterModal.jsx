@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setCred } from '../../../store/authSlice';
 import RegisterForm from './RegisterForm';
-import api from '../../../lib/api';
+import api from '../../../utils/api';
 
 const { Text, Link } = Typography;
 

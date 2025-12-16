@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { setCred } from '../../../store/authSlice';
 import LoginForm from './LoginForm';
 import RegisterModal from './RegisterModal';
-import api from '../../../lib/api';
+import api from '../../../utils/api';
 
 const { Text, Link } = Typography;
 

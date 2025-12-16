@@ -1,0 +1,21 @@
+.searchInput {
+  min-width: 300px;
+  max-width: 500px;
+  width: 100%;
+  font-size: 16px;
+}
+.optionLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.typeLabel {
+  color: #888;
+  font-size: 13px;
+  margin-left: 12px;
+}
+.taskId {
+  color: #1890ff;
+  font-size: 13px;
+  margin-left: 12px;
+}

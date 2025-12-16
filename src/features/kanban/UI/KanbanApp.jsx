@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG, migrateTasksOrder } from '../../../utils/constants';
 import KanbanView from './KanbanView';
-import { selectBoardById, createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal } from '../../../store/kanbanSlice';
+import { selectBoardById, createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, fetchBoards } from '../../../store/kanbanSlice';
 
 export const KanbanApp = () => {
   const { kanbanId } = useParams();
@@ -69,7 +69,7 @@ export const KanbanApp = () => {
     const tasksNeedingMigration = tasks.some(task => task.order === undefined || task.order === null);
     if (tasksNeedingMigration && tasks.length > 0) {
       const migratedTasks = migrateTasksOrder(tasks);
-      dispatch(setTasks({ boardId: kanbanId, tasks: migratedTasks }));
+      dispatch(setTasksLocal({ boardId: kanbanId, tasks: migratedTasks }));
     }
   }, [kanbanId]);
 
@@ -155,21 +155,19 @@ export const KanbanApp = () => {
   };
 
   useEffect(() => {
-    // When boards are loaded from the central store, they contain tasks.
-    // Ensure local state mirrors the board's tasks.
-    const boardState = useSelector((state) => selectBoardById(state, kanbanId));
-    useEffect(() => {
-      if (boardState) {
-        dispatch(setTasksLocal({ boardId: kanbanId, tasks: boardState.tasks || [] }));
-      }
-    }, [boardState, kanbanId]);
-  }, [kanbanId]);
+    if (!board) {
+      dispatch(fetchBoards());
+    } else {
+      dispatch(setTasksLocal({ boardId: kanbanId, tasks: board.tasks || [] }));
+    }
+  }, [board, kanbanId]);
 
   if (!board) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Board not found.</div>;
   }
   return (
     <KanbanView
+      title={board.name}
       tasks={tasks}
       columnsConfig={COLUMNS_CONFIG}
       selectedTask={selectedTask}

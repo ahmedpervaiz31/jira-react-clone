@@ -4,7 +4,6 @@ export const COLUMN_TYPES = {
   DONE: 'done',
 };
 
-
 export const APP_ROUTES = {
   HOME: '/',
   KANBAN_BOARD: '/kanban', 

@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 0;
+}
+.card {
+  min-width: 350px;
+  max-width: 500px;
+  width: 100%;
+}
+.meta {
+  margin-bottom: 0.75rem;
+  font-size: 15px;
+}
+.actions {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+.notFound {
+  text-align: center;
+  color: #888;
+  font-size: 1.2rem;
+  margin-top: 3rem;
+}

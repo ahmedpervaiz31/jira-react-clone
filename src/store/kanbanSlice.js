@@ -1,6 +1,6 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../lib/api';
+import api from '../utils/api';
 
 const initialState = {
   boards: [],
@@ -153,6 +153,9 @@ export const { addTaskLocal, setTasksLocal } = kanbanSlice.actions;
 
 export const selectBoardById = (state, boardId) => state.kanban.boards.find((b) => b.id === boardId);
 export const selectBoards = (state) => state.kanban.boards;
-export const selectAllTasksFlattened = (state) => state.kanban.boards.flatMap((b) => (b.tasks || []).map((t) => ({ ...t, boardId: b.id })));
+export const selectAllTasksFlattened = (state) =>
+  state.kanban.boards.flatMap((b) =>
+    (b.tasks || []).map((t) => ({ ...t, boardId: b.id, boardKey: b.key, boardName: b.name }))
+  );
 
 export default kanbanSlice.reducer;

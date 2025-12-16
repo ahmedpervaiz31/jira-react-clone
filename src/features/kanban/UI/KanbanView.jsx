@@ -9,6 +9,7 @@ import styles from './KanbanView.module.css';
 const { Title } = Typography;
 
 const KanbanView = ({
+  title,
   tasks,
   columnsConfig,
   selectedTask,
@@ -36,7 +37,7 @@ const KanbanView = ({
   return (
     <div className={styles.container}>
       <Title level={1} className={styles.title}>
-        Kanban Board
+        {title}
       </Title>
 
       <div className={styles.boardScroll}>

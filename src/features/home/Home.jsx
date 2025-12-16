@@ -8,13 +8,6 @@ import LoginView from './components/LoginView';
 import CreateBoard from './components/CreateBoard';
 import BoardItem from './components/BoardItem';
 
-const makeBoardKey = (name) => {
-  if (!name) return `B${Date.now()}`;
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-};
-
 const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const boards = useSelector(selectBoards);
@@ -25,8 +18,7 @@ const Home = () => {
   }, [isAuthenticated]);
 
   const handleCreateBoard = (boardName) => {
-    const key = makeBoardKey(boardName) + Math.floor(Math.random() * 90 + 10);
-    dispatch(createBoard({ name: boardName, key }));
+    dispatch(createBoard({ name: boardName}));
   };
 
   const handleDeleteBoard = (e, boardId) => {

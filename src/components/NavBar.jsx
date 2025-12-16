@@ -6,19 +6,29 @@ import { logOut } from '../store/authSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { useTheme } from '../store/hooks';
 import LoginModal from '../features/auth/components/LoginModal';
+import TaskSearch from '../features/tasksearch/TaskSearch'
+import { fetchBoards } from '../store/kanbanSlice';
 import styles from './NavBar.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useAuth();
   const { isDark, toggle } = useTheme();
   const [loginModalVisible, setLoginModalVisible] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     dispatch(logOut());
-    console.log("logged out");
+    console.log('logged out');
+    navigate('/');
   };
+
+  React.useEffect(() => {
+    if (isAuthenticated) dispatch(fetchBoards());
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -28,6 +38,11 @@ const Navbar = () => {
         </div>
 
         <div className={styles.links}>
+          {isAuthenticated && (
+            <div className={styles.searchWrapper}>
+              <TaskSearch />
+            </div>
+          )}
           <button 
             className={styles.themeToggle}
             onClick={toggle}

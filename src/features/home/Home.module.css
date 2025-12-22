@@ -1,3 +1,19 @@
+.loading {
+  text-align: center;
+  width: 100%;
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.endMessage {
+  text-align: center;
+  color: #888;
+  font-size: 1.08rem;
+  margin: 1.5rem 0 1.5rem 0;
+  width: 100%;
+  letter-spacing: 0.01em;
+}
 .container {
   height: calc(100vh - 60px);
   width: 100%;

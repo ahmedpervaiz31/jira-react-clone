@@ -130,14 +130,6 @@
     font-weight: 500;
 }
 
-.boardName {
-    color: var(--text-secondary) !important;
-    font-size: 0.98rem;
-    font-weight: 500;
-    margin-left: 16px;
-    text-align: right;
-}
-
 .noTasks {
     color: var(--text-secondary) !important;
     font-size: 1.2rem;

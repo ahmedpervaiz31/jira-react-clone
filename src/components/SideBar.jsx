@@ -60,10 +60,10 @@ const SideBar = ({ visible, onClose, onLoginClick, onLogout }) => {
       closable={true}
       onClose={onClose}
       open={visible}
-      width={240}
+      size={240}
       className={styles.sidebar}
       footer={footer}
-      footerStyle={{ padding: 0, background: 'inherit' }}
+      styles={{ padding: 0, background: 'inherit' }}
     >
       <div className={styles.menuSection}>
         <Link to="/" className={styles.menuItem} onClick={onClose}>

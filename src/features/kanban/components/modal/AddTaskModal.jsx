@@ -2,8 +2,8 @@
 import { Modal, Input, Select, Button, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styles from './AddTaskModal.module.css';
-import { useDispatch } from 'react-redux';
-import { searchUsersAsync } from '../../../../store/kanbanSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchUsersAsync, selectUserSearchResults, selectUserSearchLoading } from '../../../../store/userSlice';
 
 const { TextArea } = Input;
 
@@ -13,8 +13,8 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
   const [assignedTo, setAssignedTo] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(null);
-  const [userOptions, setUserOptions] = useState([]);
-  const [fetchingUsers, setFetchingUsers] = useState(false);
+  const userOptions = useSelector(selectUserSearchResults);
+  const fetchingUsers = useSelector(selectUserSearchLoading);
 
 
   const handleOk = () => {
@@ -61,22 +61,10 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
           notFoundContent={fetchingUsers ? 'Searching...' : null}
           optionLabelProp="label"
           onFocus={async () => {
-            setFetchingUsers(true);
-            try {
-              const action = await dispatch(searchUsersAsync(''));
-              setUserOptions(Array.isArray(action.payload) ? action.payload : []);
-            } finally {
-              setFetchingUsers(false);
-            }
+            await dispatch(searchUsersAsync(''));
           }}
           onSearch={async (value) => {
-            setFetchingUsers(true);
-            try {
-              const action = await dispatch(searchUsersAsync(value));
-              setUserOptions(Array.isArray(action.payload) ? action.payload : []);
-            } finally {
-              setFetchingUsers(false);
-            }
+            await dispatch(searchUsersAsync(value));
           }}
         >
           {(Array.isArray(userOptions) ? userOptions : []).map(user => (

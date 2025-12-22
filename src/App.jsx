@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Navbar from './components/Navbar';
+import Navbar from './components/NavBar';
 
 import { Layout } from 'antd';
 import { useTheme } from './store/hooks';

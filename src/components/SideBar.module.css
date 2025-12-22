@@ -1,6 +1,6 @@
 .sidebar {
 	background: var(--color-primary) !important;
-	color: var(--text-primary) !important;
+	color: #DEE4E7 !important;
 }
 
 .sidebarFooter {
@@ -10,22 +10,24 @@
 	flex-direction: column;
 	gap: 10px;
 	border-top: 1px solid var(--border-color);
+	color: #DEE4E7 !important;
 	position: relative;
 	bottom: 0;
 }
 
 .sidebarHeader {
 	display: flex;
+	color: #DEE4E7 !important;
 	align-items: center;
 	gap: 12px;
 	font-size: 1.1em;
 	font-weight: 600;
-	color: var(--text-primary);
 }
 
 .username {
 	margin-left: 4px;
 	font-weight: 500;
+	color: #DEE4E7 !important;
 }
 
 .menuSection {
@@ -39,9 +41,9 @@
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	color: #DEE4E7 !important;
 	padding: 8px 12px;
 	border-radius: 4px;
-	color: var(--text-primary) !important;
 	background: none;
 	border: none;
 	font-size: 1em;
@@ -52,11 +54,9 @@
 
 .menuItem:hover {
 	background: var(--bg-surface);
-	color: var(--color-primary) !important;
 }
 
 .ant-drawer .ant-drawer-body {
-    color: var(--text-primary) !important;
     background-color: var(--bg-primary) !important;
 }
 

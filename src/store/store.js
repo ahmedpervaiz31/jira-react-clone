@@ -3,7 +3,9 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 import themeReducer from './themeSlice';
-import kanbanReducer from './kanbanSlice';
+import boardReducer from './boardSlice';
+import taskReducer from './taskSlice';
+import userReducer from './userSlice';
 
 const themePersistConfig = {
   key: 'theme',
@@ -14,7 +16,9 @@ const themePersistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   theme: persistReducer(themePersistConfig, themeReducer),
-  kanban: kanbanReducer,
+  board: boardReducer,
+  tasks: taskReducer,
+  users: userReducer,
 });
 
 export const store = configureStore({

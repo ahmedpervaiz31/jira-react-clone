@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { logOut } from '../store/authSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
-import { fetchBoards } from '../store/kanbanSlice';
+import { fetchBoards } from '../store/boardSlice';
 
 import LoginModal from '../features/auth/components/LoginModal';
 import TaskSearch from '../features/tasksearch/TaskSearch';

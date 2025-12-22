@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTasksByAssigneeAsync, selectBoards } from '../store/kanbanSlice';
+import { useDispatch } from 'react-redux';
+import { getTasksByAssigneeAsync } from '../store/taskSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import styles from './Profile.module.css';
 
 const Profile = () => { 
     const dispatch = useDispatch();
-    const boards = useSelector(selectBoards);
     const [userTasks, setUserTasks] = useState([]);
     const { user } = useAuth();
     const navigate = useNavigate();
 
+
     useEffect(() => {
         if (!user) return;
         const fetchTasks = async () => {
-            const tasks = await dispatch(getTasksByAssigneeAsync(user.username)).unwrap();
-            setUserTasks(tasks);
+            const result = await dispatch(getTasksByAssigneeAsync({ assignee: user.username })).unwrap();
+            
+            setUserTasks(result.items || []);
         };
-            fetchTasks();
-        }, [dispatch, user]);
+        fetchTasks();
+    }, [dispatch, user]);
 
 
         if (!user) {
@@ -36,7 +37,6 @@ const Profile = () => {
                 ) : 
                 (
                     userTasks.map((task) => {
-                        const board = boards.find((b) => b.tasks.some(t => t.id === task.id && t.assignedTo === user.username));
                         return (
                             <div
                                 key={task.id}
@@ -51,7 +51,6 @@ const Profile = () => {
                                 </div>
                                 <div className={styles.taskCardFooter}>
                                     <span className={styles.taskId}>{task.displayId}</span>
-                                    <span className={styles.boardName}>{board ? board.name : 'No Board'}</span>
                                 </div>
                             </div>
                         );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'antd';
-import { LogoutOutlined, LoginOutlined, MenuOutlined, SearchOutlined } from '@ant-design/icons';
+import { UserOutlined, LoginOutlined, MenuOutlined, SearchOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { logOut } from '../store/authSlice';
@@ -70,12 +70,12 @@ const Navbar = () => {
           {isAuthenticated ? (
             <Button
               className={styles.authButton}
-              type="primary"
+              type="secondary"
               danger
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
+              icon={<UserOutlined />}
+              onClick={() => navigate('/profile')}
             >
-              Log Out
+              Profile
             </Button>
           ) : (
             <Button

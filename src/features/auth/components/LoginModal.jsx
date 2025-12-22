@@ -37,7 +37,6 @@ const LoginModal = ({ visible, onClose }) => {
         setSubmitting(false);
       }
     } catch (err) {
-      console.error('Login error', err);
       message.error(err.response?.data?.error || err.message || 'Login failed');
       setLoading(false);
       setSubmitting(false);

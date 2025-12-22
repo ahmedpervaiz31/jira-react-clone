@@ -1,15 +1,21 @@
 ﻿import React, { useState } from 'react';
-import { Modal, Input, Button, DatePicker } from 'antd';
+import { Modal, Input, Select, Button, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styles from './AddTaskModal.module.css';
+import { useDispatch } from 'react-redux';
+import { searchUsersAsync } from '../../../../store/kanbanSlice';
 
 const { TextArea } = Input;
 
 export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
+  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(null);
+  const [userOptions, setUserOptions] = useState([]);
+  const [fetchingUsers, setFetchingUsers] = useState(false);
+
 
   const handleOk = () => {
     if (!title.trim() || !assignedTo.trim()) return;
@@ -45,12 +51,44 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <Input
+        <Select
           className={styles.field}
-          placeholder="Assigned to"
-          value={assignedTo}
-          onChange={(e) => setAssignedTo(e.target.value)}
-        />
+          showSearch
+          placeholder="Assign to user"
+          value={assignedTo || undefined}
+          onChange={setAssignedTo}
+          filterOption={false}
+          notFoundContent={fetchingUsers ? 'Searching...' : null}
+          optionLabelProp="label"
+          onFocus={async () => {
+            setFetchingUsers(true);
+            try {
+              const action = await dispatch(searchUsersAsync(''));
+              setUserOptions(Array.isArray(action.payload) ? action.payload : []);
+            } finally {
+              setFetchingUsers(false);
+            }
+          }}
+          onSearch={async (value) => {
+            setFetchingUsers(true);
+            try {
+              const action = await dispatch(searchUsersAsync(value));
+              setUserOptions(Array.isArray(action.payload) ? action.payload : []);
+            } finally {
+              setFetchingUsers(false);
+            }
+          }}
+        >
+          {(Array.isArray(userOptions) ? userOptions : []).map(user => (
+            <Select.Option
+              key={user.username}
+              value={user.username}
+              label={user.username}
+            >
+              {user.username}
+            </Select.Option>
+          ))}
+        </Select>
 
         <TextArea
           className={styles.field}

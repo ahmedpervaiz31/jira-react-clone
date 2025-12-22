@@ -62,6 +62,25 @@ export const moveTaskAsync = createAsyncThunk('kanban/moveTask', async ({ taskId
   }
 });
 
+export const searchUsersAsync = createAsyncThunk('kanban/searchUsers', async (query, { rejectWithValue }) => {
+  try {
+    const res = await api.get('/auth/users', { params: { query } });
+    return res.data;
+  }
+  catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
+
+export const getTasksByAssigneeAsync = createAsyncThunk('kanban/getTasksByAssignee', async (userId, { rejectWithValue }) => {
+  try {
+    const res = await api.get(`/tasks/assigned/${userId}`);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
+
 const kanbanSlice = createSlice({
   name: 'kanban',
   initialState,
@@ -150,12 +169,7 @@ const kanbanSlice = createSlice({
 });
 
 export const { addTaskLocal, setTasksLocal } = kanbanSlice.actions;
-
 export const selectBoardById = (state, boardId) => state.kanban.boards.find((b) => b.id === boardId);
 export const selectBoards = (state) => state.kanban.boards;
-export const selectAllTasksFlattened = (state) =>
-  state.kanban.boards.flatMap((b) =>
-    (b.tasks || []).map((t) => ({ ...t, boardId: b.id, boardKey: b.key, boardName: b.name }))
-  );
 
 export default kanbanSlice.reducer;

@@ -15,22 +15,20 @@ const TaskSearch = ({ onItemSelect, autoFocus }) => {
   const [searchValue, setSearchValue] = useState(undefined);
   const [inputValue, setInputValue] = useState('');
 
-  const fetchBoards = async (q) => {
+  const fetchBoards = async (query) => {
     try {
-      const res = await api.get(`/boards/search?q=${encodeURIComponent(q || '')}`);
+      const res = await api.get(`/boards/search?q=${encodeURIComponent(query || '')}`);
       return res.data;
     } catch (err) {
-      console.error("Board search failed", err);
       return [];
     }
   };
   
-  const fetchTasks = async (q) => {
+  const fetchTasks = async (query) => {
     try {
-      const res = await api.get(`/tasks/search?q=${encodeURIComponent(q || '')}`);
+      const res = await api.get(`/tasks/search?q=${encodeURIComponent(query || '')}`);
       return res.data;
     } catch (err) {
-      console.error("Task search failed", err);
       return [];
     }
   };
@@ -60,25 +58,27 @@ const TaskSearch = ({ onItemSelect, autoFocus }) => {
           setInputValue('');
         }
       } catch (err) {
-        console.error("Failed to load initial selection", err);
+        setSearchValue(undefined);
+        setInputValue('');
       }
     };
 
     loadInitialSelection();
   }, [location.pathname]);
 
-  const handleSearch = async (q) => {
-    setInputValue(q);
+  const handleSearch = async (query) => {
+    setInputValue(query);
     
     try {
       const [boardsRes, tasksRes] = await Promise.all([
-        fetchBoards(q),
-        fetchTasks(q)
+        fetchBoards(query),
+        fetchTasks(query)
       ]);
       setBoards(boardsRes || []);
       setTasks(tasksRes || []);
     } catch (err) {
-      console.error("Search failed", err);
+      setBoards([]);
+      setTasks([]);
     }
   };
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import DeleteButton from '../../../components/DeleteButton';
 import { APP_ROUTES } from '../../../utils/constants'; 
 import styles from '../Home.module.css';
 
@@ -17,24 +18,11 @@ const BoardItem = ({ board, onDelete }) => {
         </Button>
       </Link>
 
-      <Button
-        danger
-        type="secondary"
-        size="large"
+      <DeleteButton
         icon={<DeleteOutlined />}
-        onClick={() => {
-          Modal.confirm({
-            title: 'Delete this board?',
-            icon: <ExclamationCircleOutlined />,
-            content: 'This action cannot be undone.',
-            okType: 'danger',
-            okText: 'Delete',
-            cancelText: 'Cancel',
-            onOk() {
-              onDelete && onDelete(board.id);
-            }
-          });
-        }}
+        onConfirm={() => onDelete && onDelete(board.id)}
+        modalTitle="Delete this board?"
+        modalContent="This action cannot be undone."
       />
     </div>
   );

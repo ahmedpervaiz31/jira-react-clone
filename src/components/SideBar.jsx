@@ -46,12 +46,14 @@ const SideBar = ({ visible, onClose, onLoginClick, onLogout }) => {
     <Drawer
       title={
         <div className={styles.sidebarHeader}>
-          {isAuthenticated &&
-          <>
-            <Avatar icon={<UserOutlined />} />
-            <span className={styles.username}>{user.username}</span>
-          </>
-        }
+          <Link to="/profile" className={styles.menuItem} onClick={onClose}>
+            {isAuthenticated &&
+            <>
+              <Avatar icon={<UserOutlined />} />
+              <span className={styles.username}>{user.username}</span>
+            </>
+            }
+          </Link>
         </div>
       }
       placement="left"

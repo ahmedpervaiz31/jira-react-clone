@@ -34,7 +34,6 @@ const RegisterModal = ({ visible, onClose }) => {
         navigate('/login');
       }
     } catch (err) {
-      console.error('Register error', err);
       message.error(err.response?.data?.error || err.message || 'Registration failed');
       setLoading(false);
       setSubmitting(false);

@@ -28,9 +28,7 @@ const KanbanView = ({
     return tasks
       .filter((t) => t.status === status)
       .sort((a, b) => {
-        const orderA = a.order !== undefined ? a.order : 0;
-        const orderB = b.order !== undefined ? b.order : 0;
-        return orderA - orderB;
+        return a.order - b.order;
       });
   };
 

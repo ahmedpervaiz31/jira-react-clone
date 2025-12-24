@@ -2,14 +2,15 @@ import React from 'react';
 import { Button, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './DeleteButton.module.css';
+import { DELETE_MODAL } from '../utils/constants';
 
 const DeleteButton = ({
   onConfirm,
   icon,
   buttonProps = {},
-  modalTitle = 'Delete?',
-  modalContent = 'This action cannot be undone.',
-  okText = 'Delete',
+  modalTitle = DELETE_MODAL.TITLE,
+  modalContent = DELETE_MODAL.CONTENT,
+  okText = DELETE_MODAL.OK_TEXT,
   cancelText = 'Cancel',
   okType = 'danger',
   children

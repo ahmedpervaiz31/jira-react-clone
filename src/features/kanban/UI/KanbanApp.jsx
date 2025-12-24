@@ -4,11 +4,10 @@ import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG } from '../../../utils/constants';
 import KanbanView from './KanbanView';
 import styles from './KanbanView.module.css'; 
-import { createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, fetchTasks, selectTasksByBoard } from '../../../store/taskSlice';
+import { createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
 
 import { selectBoards } from '../../../store/boardSlice';
 
-// Stable empty object for selector defaults
 const EMPTY_OBJ = {};
 
 
@@ -21,33 +20,15 @@ export const KanbanApp = () => {
   const loading = useSelector((state) => state.tasks.loading);
   const tasksPage = useSelector((state) => state.tasks.tasksPage[kanbanId]) || EMPTY_OBJ;
   const tasksHasMore = useSelector((state) => state.tasks.tasksHasMore[kanbanId]) || EMPTY_OBJ;
-
-  const loadMoreRefs = useRef({});
+  const tasksTotal = useSelector((state) => state.tasks.tasksTotal[kanbanId]) || EMPTY_OBJ;
+  const tasksLoading = useSelector((state) => selectTasksLoadingByBoard(state, kanbanId));
 
   useEffect(() => {
     if (!kanbanId) return;
     COLUMNS_CONFIG.forEach((col) => {
-      if (tasksPage[col.id] === undefined) {
-        dispatch(fetchTasks({ boardId: kanbanId, status: col.id, page: 1, limit: 20 }));
-      }
+      dispatch(fetchTasks({ boardId: kanbanId, status: col.id, page: 1, limit: 12 }));
     });
   }, [kanbanId, board]);
-
-  useEffect(() => {
-    const observers = {};
-    COLUMNS_CONFIG.forEach((col) => {
-      if (!loadMoreRefs.current[col.id]) return;
-      observers[col.id] = new window.IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && tasksHasMore[col.id] !== false && !loading) {
-          dispatch(fetchTasks({ boardId: kanbanId, status: col.id, page: (tasksPage[col.id] || 1) + 1, limit: 20 }));
-        }
-      }, { threshold: 1 });
-      observers[col.id].observe(loadMoreRefs.current[col.id]);
-    });
-    return () => {
-      Object.values(observers).forEach((observer) => observer.disconnect());
-    };
-  }, [tasksHasMore, loading, tasksPage, kanbanId]);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -93,6 +74,12 @@ export const KanbanApp = () => {
   const closeAddModal = () => {
     setAddStatus(null);
     setAddVisible(false);
+  };
+
+  const fetchMoreTasks = (status) => {
+    const current = tasksPage[status] || 0;
+    const nextPage = current + 1;
+    dispatch(fetchTasks({ boardId: kanbanId, status, page: nextPage, limit: 12 }));
   };
 
   // Drag and drop logic
@@ -170,6 +157,7 @@ export const KanbanApp = () => {
       detailVisible={detailVisible}
       addVisible={addVisible}
       addStatus={addStatus}
+      tasksTotal={tasksTotal}
       onAddTask={handleAddTask}
       onDeleteTask={handleDeleteTask}
       onOpenTaskDetail={openTaskDetail}
@@ -179,8 +167,8 @@ export const KanbanApp = () => {
       onDragEnd={handleDragEnd}
       tasksPage={tasksPage}
       tasksHasMore={tasksHasMore}
-      fetchMoreTasks={null}
-      loadMoreRefs={loadMoreRefs}
+      fetchMoreTasks={fetchMoreTasks}
+      tasksLoading={tasksLoading}
       loading={loading}
     />
   );

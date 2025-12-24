@@ -16,7 +16,7 @@ const Profile = () => {
         if (!user) return;
         const fetchTasks = async () => {
             const result = await dispatch(getTasksByAssigneeAsync({ assignee: user.username })).unwrap();
-            
+
             setUserTasks(result.items || []);
         };
         fetchTasks();
@@ -42,7 +42,6 @@ const Profile = () => {
                                 key={task.id}
                                 className={styles.taskCard}
                                 onClick={() => navigate(`/tasks/${task.id}`)}
-                                style={{ cursor: 'pointer' }}
                                 title="View task details"
                             >
                                 <div className={styles.taskCardHeader}>

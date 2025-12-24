@@ -17,6 +17,7 @@ const KanbanView = ({
   detailVisible,
   addVisible,
   addStatus,
+  tasksTotal,
   onAddTask,
   onDeleteTask,
   onOpenTaskDetail,
@@ -27,7 +28,7 @@ const KanbanView = ({
   tasksPage,
   tasksHasMore,
   fetchMoreTasks,
-  loadMoreRefs,
+  tasksLoading,
   loading,
 }) => {
   const getTasksForColumn = (status) => {
@@ -48,27 +49,34 @@ const KanbanView = ({
         <DragDropContext onDragEnd={onDragEnd}>
           <Row gutter={16} justify="center" align="top" className={styles.row}>
             {columnsConfig.map((col) => {
-              const colLoading = loading && (tasksPage && tasksPage[col.id] !== undefined);
+              const colLoading = tasksLoading && tasksLoading[col.id];
               const colHasMore = tasksHasMore && tasksHasMore[col.id];
+              const colTasks = getTasksForColumn(col.id);
+              const displayedCount = colTasks.length;
+              const totalCount = (tasksTotal && typeof tasksTotal[col.id] === 'number') ? tasksTotal[col.id] : displayedCount;
               return (
                 <Col key={col.id} span={8} className={styles.column}>
                   <BoardColumn
                     title={col.title}
                     status={col.id}
-                    tasks={getTasksForColumn(col.id)}
+                    tasks={colTasks}
+                    tasksTotal={tasksTotal[col.id]}
                     onAddTask={onAddTask}
                     onDeleteTask={onDeleteTask}
                     onOpenDetail={onOpenTaskDetail}
                     onOpenAdd={onOpenAddModal}
                   />
-                  <div
-                    ref={el => { if (loadMoreRefs && loadMoreRefs.current) loadMoreRefs.current[col.id] = el; }}
-                    className={styles.paginationContainer}
-                  >
-                    {colLoading && colHasMore !== false && <span>Loading more tasks...</span>}
-                    {colHasMore === false && !colLoading && (
-                      <span style={{ color: '#888', fontSize: 12 }}>All tasks loaded.</span>
-                    )}
+                  <div className={styles.paginationContainer}>
+                    <span className={styles.displayCount}>{`${displayedCount} out of ${totalCount} displayed`}</span>
+                    {colHasMore ? (
+                      <button
+                        className={styles.loadMoreBtn}
+                        disabled={!!colLoading}
+                        onClick={() => fetchMoreTasks && fetchMoreTasks(col.id)}
+                      >
+                        {colLoading ? 'Loading...' : 'Load more'}
+                      </button>
+                    ) : null}
                   </div>
                 </Col>
               );

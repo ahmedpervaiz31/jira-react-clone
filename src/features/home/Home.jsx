@@ -72,11 +72,19 @@ const Home = () => {
             })}
           </div>
           {loading && <div className={styles.loading}>Loading...</div>}
-          {!hasMore && boards.length > 0 && (
-            <div className={styles.endMessage}>
-              {`${boards.length} loaded out of ${total}`}
-            </div>
-          )}
+
+          <div className={styles.paginationContainer}>
+            <span className={styles.displayCount}>{`${boards.length} out of ${typeof total === 'number' ? total : boards.length} displayed`}</span>
+            {hasMore ? (
+              <button
+                className={styles.loadMoreBtn}
+                disabled={!!loading}
+                onClick={() => dispatch(fetchBoards({ page: page + 1 }))}
+              >
+                {loading ? 'Loading...' : 'Load more'}
+              </button>
+            ) : null}
+          </div>
         </>
       )}
     </div>

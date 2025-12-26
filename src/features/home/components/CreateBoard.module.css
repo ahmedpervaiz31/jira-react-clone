@@ -1,0 +1,43 @@
+.triggerContainer {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 10px 0;
+}
+
+.heading {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.Btn {
+    background-color: var(--color-primary) !important;
+}
+
+.Btn:hover {
+    opacity: 0.6; 
+    background-color: var(--color-primary) !important;
+}
+
+.field {
+    font-size: 1rem;
+    padding: 8px 11px;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.ant-btn.ant-btn-color-primary {
+  --ant-btn-color-base: var(--color-primary) !important;
+}

@@ -1,15 +1,21 @@
 ﻿import React, { useState } from 'react';
-import { Modal, Input, Button, DatePicker } from 'antd';
+import { Modal, Input, Select, Button, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styles from './AddTaskModal.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchUsersAsync, selectUserSearchResults, selectUserSearchLoading } from '../../../../store/userSlice';
 
 const { TextArea } = Input;
 
 export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
+  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(null);
+  const userOptions = useSelector(selectUserSearchResults);
+  const fetchingUsers = useSelector(selectUserSearchLoading);
+
 
   const handleOk = () => {
     if (!title.trim() || !assignedTo.trim()) return;
@@ -45,12 +51,32 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd }) => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <Input
+        <Select
           className={styles.field}
-          placeholder="Assigned to"
-          value={assignedTo}
-          onChange={(e) => setAssignedTo(e.target.value)}
-        />
+          showSearch
+          placeholder="Assign to user"
+          value={assignedTo || undefined}
+          onChange={setAssignedTo}
+          filterOption={false}
+          notFoundContent={fetchingUsers ? 'Searching...' : null}
+          optionLabelProp="label"
+          onFocus={async () => {
+            await dispatch(searchUsersAsync(''));
+          }}
+          onSearch={async (value) => {
+            await dispatch(searchUsersAsync(value));
+          }}
+        >
+          {(Array.isArray(userOptions) ? userOptions : []).map(user => (
+            <Select.Option
+              key={user.username}
+              value={user.username}
+              label={user.username}
+            >
+              {user.username}
+            </Select.Option>
+          ))}
+        </Select>
 
         <TextArea
           className={styles.field}

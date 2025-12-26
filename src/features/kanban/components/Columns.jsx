@@ -18,14 +18,14 @@ const statusIcon = (status) => {
   }
 };
 
-export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onOpenDetail, onOpenAdd }) => {
+export const BoardColumn = ({ title, status, tasks, tasksTotal, onAddTask, onDeleteTask, onOpenDetail, onOpenAdd }) => {
   return (
     <Card
       className={styles.columnCard}
       title={
         <div className={styles.columnHeader}>
           <span className={styles.titleIcon}>{statusIcon(status)}</span>
-          <span className={styles.titleText}>{title} ({tasks.length})</span>
+          <span className={styles.titleText}>{title} ({tasksTotal})</span>
         </div>
       }
       hoverable
@@ -51,7 +51,7 @@ export const BoardColumn = ({ title, status, tasks, onAddTask, onDeleteTask, onO
         )}
       </Droppable>
       <div className={styles.actions}>
-        <Button type="primary" icon={<PlusOutlined />} 
+        <Button type="primary" className={styles.addButton} icon={<PlusOutlined />} 
             onClick={() => onOpenAdd && onOpenAdd(status)}>
                 Add Task
         </Button>

@@ -6,28 +6,28 @@ html, body, #root {
 
 :root,
 .light-mode {
-  --bg-primary: #ffffff;
-  --bg-surface: #f4f5f7;
+  --bg-primary: #DEE4E7;
+  --bg-surface: #DEE4E7;
   --bg-input: #ffffff;
-  --text-primary: #172b4d;
-  --text-secondary: #626f86;
-  --text-subtle: #626f86;
-  --color-primary: #0052cc;
+  --text-primary: #000000;
+  --text-secondary: #DEE4E7;
+  --text-subtle: #aab0b3; 
+  --color-primary: #00255c;
   --color-error: #e94949;
-  --text-on-primary: #ffffff;
-  --border-subtle: #d9d9d9;
+  --text-on-primary: #c5cbce;
+  --border-subtle: #d9d8d4;
   --border-color: var(--border-subtle);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .dark-mode {
-  --bg-primary: #121212;
-  --bg-surface: #1e1e1e;
+  --bg-primary: #172947;
+  --bg-surface: #0d1627;
   --bg-input: #282c3f;
-  --text-primary: #eaeaea;
-  --text-secondary: #a0a0a0;
-  --text-subtle: #a0a0a0;
-  --color-primary: #0052cc;
+  --text-primary: #DEE4E7;
+  --text-secondary: #000000;
+  --text-subtle: #aab0b3;
+  --color-primary:#00255c;
   --color-error: #f45a5a;
   --text-on-primary: #ffffff;
   --border-subtle: #444444;
@@ -288,7 +288,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: transparent !important;
 }
 
-/* Message and notification styles */
 .ant-message-notice-content {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;

@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import authReducer from '../features/auth/authSlice';
+import authReducer from './authSlice';
 import themeReducer from './themeSlice';
-import kanbanReducer from './kanbanSlice';
+import boardReducer from './boardSlice';
+import taskReducer from './taskSlice';
+import userReducer from './userSlice';
 
 const themePersistConfig = {
   key: 'theme',
@@ -11,22 +13,12 @@ const themePersistConfig = {
   whitelist: ['isDark'],
 };
 
-const kanbanPersistConfig = {
-  key: 'kanban',
-  storage,
-  whitelist: ['tasks'],
-};
-
-const authPersistConfig = {
-  key: 'auth',
-  storage,
-  whitelist: ['user', 'isAuthenticated'],
-};
-
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
+  auth: authReducer,
   theme: persistReducer(themePersistConfig, themeReducer),
-  kanban: persistReducer(kanbanPersistConfig, kanbanReducer),
+  board: boardReducer,
+  tasks: taskReducer,
+  users: userReducer,
 });
 
 export const store = configureStore({

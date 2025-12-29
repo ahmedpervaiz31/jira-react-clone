@@ -1,6 +1,7 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { Card, Tag, Button } from 'antd';
+import { Card, Tag } from 'antd';
+import DeleteButton from '../../../../components/DeleteButton';
 import { DeleteOutlined } from '@ant-design/icons';
 import styles from './TaskCard.module.css';
 
@@ -22,14 +23,15 @@ export const TaskCard = ({ task, index, onDelete, onOpenDetail }) => {
             onClick={() => onOpenDetail && onOpenDetail(task)}
           >
             <div className={styles.content}>
-              <Tag color="blue">#{task.id}</Tag>
+              <Tag color="blue">#{task.displayId ? task.displayId : String(task.id).slice(0,6)}</Tag>
               <div className={styles.title}>{task.title}</div>
               <div className={styles.actions}>
-                <Button
-                  type="text"
-                  danger
+                <DeleteButton
                   icon={<DeleteOutlined />}
-                  onClick={(e) => { e.stopPropagation(); onDelete && onDelete(task.id); }}
+                  onConfirm={() => onDelete && onDelete(task.id)}
+                  modalTitle="Delete this task?"
+                  modalContent="This action cannot be undone."
+                  buttonProps={{ onClick: (e) => e.stopPropagation() }}
                 />
               </div>
             </div>

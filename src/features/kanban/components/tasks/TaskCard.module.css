@@ -9,7 +9,6 @@
   border: 1px solid var(--border-subtle);
 }
 
-/* Wrapper div for drag and drop */
 .draggableWrapper {
   margin-bottom: 8px;
 }

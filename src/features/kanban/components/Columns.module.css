@@ -72,3 +72,12 @@
   transition: all 0.2s ease;
 }
 
+.addButton {
+  background-color: var(--color-primary) !important;
+}
+
+.addButton:hover {
+    opacity: 0.6; 
+    background-color: var(--color-primary) !important;
+}
+

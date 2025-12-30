@@ -1,27 +1,18 @@
 import React from 'react';
+
 import { Modal } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { TaskMetadata } from '../tasks/TaskMetadata';
 import { TaskStatusTags } from '../tasks/TaskStatusTags';
-import { TaskActions } from '../tasks/TaskActions';
-import { TaskDescription } from '../tasks/TaskDescription';
+import DeleteButton from '../../../../components/DeleteButton';
 import styles from './TaskDetailModal.module.css';
+
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
   if (!task) return null;
-
-  const handleDelete = () => {
-    Modal.confirm({
-      title: 'Delete task',
-      icon: <ExclamationCircleOutlined />,
-      content: 'Are you sure you want to delete this task?',
-      okType: 'danger',
-      onOk() {
-        onDelete && onDelete(task.id);
-        onClose && onClose();
-      }
-    });
-  };
 
   return (
     <Modal
@@ -43,10 +34,24 @@ export const TaskDetailModal = ({ visible, task, onClose, onDelete }) => {
         </div>
       </div>
 
-      <TaskDescription description={task.description} />
+      <div className={styles.descriptionSection}>
+        <Title level={5} className={styles.descriptionTitle}>More Info</Title>
+        <div
+          className={styles.descriptionContent}
+          dangerouslySetInnerHTML={{ __html: task.description || '<p>No additional details.</p>' }}
+        />
+      </div>
 
       <div className={styles.modalFooter}>
-        <TaskActions onDelete={handleDelete} />
+        <DeleteButton
+          icon={<DeleteOutlined />}
+          onConfirm={() => {
+            onDelete && onDelete(task.id);
+            onClose && onClose();
+          }}
+          modalTitle="Delete this task?"
+          modalContent="This action cannot be undone."
+        />
       </div>
     </Modal>
   );

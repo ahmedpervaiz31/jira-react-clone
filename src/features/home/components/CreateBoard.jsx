@@ -33,7 +33,8 @@ const CreateBoard = ({ onCreate }) => {
             size="large"
             icon={<PlusOutlined />} 
             onClick={showModal}
-        >
+            className={styles.Btn}
+          >
             Create New Board
         </Button>
       </div>
@@ -58,10 +59,10 @@ const CreateBoard = ({ onCreate }) => {
           />
 
           <div className={styles.actions}>
-            <Button onClick={handleCancel} className={styles.cancelButton}>
+            <Button type="secondary" onClick={handleCancel} className={styles.cancelButton}>
               Cancel
             </Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleSubmit}>
+            <Button type="primary" icon={<PlusOutlined />} className={styles.Btn} onClick={handleSubmit}>
               Create
             </Button>
           </div>

@@ -8,13 +8,16 @@ import styles from './KanbanView.module.css';
 
 const { Title } = Typography;
 
+
 const KanbanView = ({
+  title,
   tasks,
   columnsConfig,
   selectedTask,
   detailVisible,
   addVisible,
   addStatus,
+  tasksTotal,
   onAddTask,
   onDeleteTask,
   onOpenTaskDetail,
@@ -22,39 +25,62 @@ const KanbanView = ({
   onOpenAddModal,
   onCloseAddModal,
   onDragEnd,
+  tasksPage,
+  tasksHasMore,
+  fetchMoreTasks,
+  tasksLoading,
+  loading,
 }) => {
   const getTasksForColumn = (status) => {
     return tasks
       .filter((t) => t.status === status)
       .sort((a, b) => {
-        const orderA = a.order !== undefined ? a.order : 0;
-        const orderB = b.order !== undefined ? b.order : 0;
-        return orderA - orderB;
+        return a.order - b.order;
       });
   };
 
   return (
     <div className={styles.container}>
       <Title level={1} className={styles.title}>
-        Kanban Board
+        {title}
       </Title>
 
       <div className={styles.boardScroll}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Row gutter={16} justify="center" align="top" className={styles.row}>
-            {columnsConfig.map((col) => (
-              <Col key={col.id} span={8} className={styles.column}>
-                <BoardColumn
-                  title={col.title}
-                  status={col.id}
-                  tasks={getTasksForColumn(col.id)}
-                  onAddTask={onAddTask}
-                  onDeleteTask={onDeleteTask}
-                  onOpenDetail={onOpenTaskDetail}
-                  onOpenAdd={onOpenAddModal}
-                />
-              </Col>
-            ))}
+            {columnsConfig.map((col) => {
+              const colLoading = tasksLoading && tasksLoading[col.id];
+              const colHasMore = tasksHasMore && tasksHasMore[col.id];
+              const colTasks = getTasksForColumn(col.id);
+              const displayedCount = colTasks.length;
+              const totalCount = (tasksTotal && typeof tasksTotal[col.id] === 'number') ? tasksTotal[col.id] : displayedCount;
+              return (
+                <Col key={col.id} span={8} className={styles.column}>
+                  <BoardColumn
+                    title={col.title}
+                    status={col.id}
+                    tasks={colTasks}
+                    tasksTotal={tasksTotal[col.id]}
+                    onAddTask={onAddTask}
+                    onDeleteTask={onDeleteTask}
+                    onOpenDetail={onOpenTaskDetail}
+                    onOpenAdd={onOpenAddModal}
+                  />
+                  <div className={styles.paginationContainer}>
+                    <span className={styles.displayCount}>{`${displayedCount} out of ${totalCount} displayed`}</span>
+                    {colHasMore ? (
+                      <button
+                        className={styles.loadMoreBtn}
+                        disabled={!!colLoading}
+                        onClick={() => fetchMoreTasks && fetchMoreTasks(col.id)}
+                      >
+                        {colLoading ? 'Loading...' : 'Load more'}
+                      </button>
+                    ) : null}
+                  </div>
+                </Col>
+              );
+            })}
           </Row>
         </DragDropContext>
       </div>

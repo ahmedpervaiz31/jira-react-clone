@@ -1,0 +1,39 @@
+.searchModal .ant-modal-content {
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+  height: 100%; 
+}
+
+.searchModal {
+  top: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-bottom: 0 !important;
+}
+
+.mobileSearchBarWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  width: 100%; 
+  height: 56px;
+  padding: 0 16px; 
+  background-color: var(--bg-primary);
+  box-sizing: border-box; 
+}
+
+.searchContainer {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+  width: 100%; 
+}
+
+.searchInputWrapper {
+  width: 100%; 
+  display: flex;
+}

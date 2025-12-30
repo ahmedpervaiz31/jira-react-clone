@@ -47,3 +47,18 @@
   border: 1px solid var(--text-subtle) !important;
 }
 
+.taskTitle {
+  color: #888;
+  margin-left: 8px;
+}
+
+.dependencyError {
+  color: red;
+  margin-top: 4px;
+}
+
+.label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../auth/hooks/useAuth';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectBoards, fetchBoards, createBoard, deleteBoardAsync, selectBoardPage, selectBoardHasMore, selectBoardLoading, selectBoardTotal } from '../../store/boardSlice';
+import { selectBoards, fetchBoards, createBoard, deleteBoardAsync, selectBoardTotal } from '../../store/boardSlice';
+import { useBoardPagination } from './hooks/useBoardPagination';
 import styles from './Home.module.css';
 
 import LoginView from './components/LoginView';
@@ -12,31 +13,10 @@ const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const boards = useSelector(selectBoards);
   const dispatch = useDispatch();
-
-  //define page and hasMore for pagination 
-  const page = useSelector(selectBoardPage);
-  const hasMore = useSelector(selectBoardHasMore);
-  const loading = useSelector(selectBoardLoading);
   const total = useSelector(selectBoardTotal);
+  
+  const { lastBoardRef, page, hasMore, loading } = useBoardPagination();
 
-  useEffect(() => {
-    if (isAuthenticated) dispatch(fetchBoards({ page: 1 }));
-  }, [isAuthenticated, dispatch]);
-
-  const observer = useRef();
-  const lastBoardRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new window.IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          dispatch(fetchBoards({ page: page + 1 }));
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, page, dispatch]
-  );
 
   const handleCreateBoard = (boardName) => {
     dispatch(createBoard({ name: boardName }));

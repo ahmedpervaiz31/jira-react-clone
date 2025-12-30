@@ -27,7 +27,6 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Restore auth from token on app start
     const token = localStorage.getItem('token');
     if (token) {
       (async () => {

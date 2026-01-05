@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DependencyBlockModal from '../components/modal/DependencyBlockModal';
 import { areDependenciesReady } from '../../../utils/dependencyHelpers';
 import { useSelector, useDispatch } from 'react-redux';
@@ -38,8 +38,10 @@ export const KanbanApp = () => {
   const [addVisible, setAddVisible] = useState(false);
   const [addStatus, setAddStatus] = useState(null);
   const [depBlockModal, setDepBlockModal] = useState({ visible: false, blockingTasks: [] });
+  const lastValidTasksRef = useRef([]);
+  const lastValidTotalsRef = useRef({});
 
-  const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
+  const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null, dependencies = []) => {
     const tasksInColumn = allTasks.filter(t => t.status === status);
     const maxOrder = tasksInColumn.length > 0
       ? Math.max(...tasksInColumn.map(t => (t.order !== undefined ? t.order : -1)))
@@ -52,6 +54,7 @@ export const KanbanApp = () => {
       description,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
       order: maxOrder + 1,
+      dependencies 
     };
     dispatch(createTask(payload));
   };
@@ -99,16 +102,28 @@ export const KanbanApp = () => {
     const task = allTasks.find(t => t.id === draggableId);
     if (!task) return;
 
-    if ((destination.droppableId === 'in_progress' || destination.droppableId === 'done') && Array.isArray(task.dependencies) && task.dependencies.length > 0) {
-      const depStatus = await areDependenciesReady(task.id);
+    lastValidTasksRef.current = [...allTasks];
+    lastValidTotalsRef.current = { ...tasksTotal };
+
+    const isMovingToNewCol = source.droppableId !== destination.droppableId;
+    if (isMovingToNewCol && (destination.droppableId === 'in_progress' || destination.droppableId === 'done') &&
+      Array.isArray(task.dependencies) && task.dependencies.length > 0) {
+      const depStatus = await areDependenciesReady(task.id, destination.droppableId);
       if (!depStatus.ready) {
         setDepBlockModal({ visible: true, blockingTasks: depStatus.blocking || [] });
+        setTimeout(() => {
+          dispatch(setTasksLocal({
+            boardId: kanbanId,
+            tasks: lastValidTasksRef.current,
+            totals: lastValidTotalsRef.current
+          }));
+        }, 350);
         return;
       }
     }
 
     let updatedTasks = [...allTasks];
-    const updatedTasksTotal = { ...tasksTotal }; 
+    const updatedTasksTotal = { ...tasksTotal };
 
     if (source.droppableId === destination.droppableId) {
       // same col
@@ -136,7 +151,7 @@ export const KanbanApp = () => {
       updatedTasksTotal[destination.droppableId] = prevDest + 1;
 
       const sourceTasks = updatedTasks
-        .filter(t => t.status === source.droppableId && t.id !== task.id) 
+        .filter(t => t.status === source.droppableId && t.id !== task.id)
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       sourceTasks.forEach((t, idx) => {
@@ -149,7 +164,7 @@ export const KanbanApp = () => {
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       const movedTask = { ...task, status: destination.droppableId };
-      
+
       destTasks.splice(destination.index, 0, movedTask);
 
       destTasks.forEach((t, idx) => {
@@ -160,10 +175,10 @@ export const KanbanApp = () => {
       });
     }
     //update tasks and total together
-    dispatch(setTasksLocal({ 
-        boardId: kanbanId, 
-        tasks: updatedTasks,
-        totals: updatedTasksTotal 
+    dispatch(setTasksLocal({
+      boardId: kanbanId,
+      tasks: updatedTasks,
+      totals: updatedTasksTotal
     }));
 
     updatedTasks.forEach((t) => {

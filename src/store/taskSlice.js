@@ -50,6 +50,16 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks',
   }
 );
 
+
+export const getTaskById = createAsyncThunk('tasks/getTaskById', async ({ taskId }, { rejectWithValue }) => {
+  try {
+    const res = await api.get(`/tasks/${taskId}`);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+})
+
 export const createTask = createAsyncThunk('tasks/createTask', async (payload, { rejectWithValue }) => {
   try {
     const res = await api.post('/tasks', payload);
@@ -190,6 +200,7 @@ const taskSlice = createSlice({
           createdAt: t.createdAt,
           order: maxOrder + idx + 1, 
           displayId: t.displayId,
+          dependencies: t.dependencies || [],
         }));
 
         if (!state.tasksPage[boardId]) state.tasksPage[boardId] = {};
@@ -241,6 +252,7 @@ const taskSlice = createSlice({
           createdAt: t.createdAt,
           order: t.order,
           displayId: t.displayId,
+          dependencies: t.dependencies || [], 
         });
       })
       .addCase(deleteTaskAsync.fulfilled, (state, action) => {

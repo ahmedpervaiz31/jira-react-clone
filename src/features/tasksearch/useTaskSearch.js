@@ -9,24 +9,27 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
   const [inputValue, setInputValue] = useState(initialQuery);
   const navigate = useNavigate();
   const location = useLocation();
+  
+  const urlBoardId = location.pathname.match(/\/kanban\/([^/]+)/)?.[1];
+  const effectiveBoardId = boardId || urlBoardId;
 
   const fetchBoards = useCallback(async (query) => {
-    if (!includeBoards || boardId) return [];
+    if (!includeBoards || effectiveBoardId) return [];
     try {
       const res = await api.get(`/boards/search?q=${encodeURIComponent(query || '')}`);
       return res.data;
     } catch (err) {
       return [];
     }
-  }, [includeBoards, boardId]);
+  }, [includeBoards, effectiveBoardId]);
 
   const fetchTasks = useCallback(async (query) => {
     if (!includeTasks) return [];
     try {
       const params = new URLSearchParams({ q: query || '' });
       
-      if (boardId) {
-        params.append('boardId', boardId);
+      if (effectiveBoardId) {
+        params.append('boardId', effectiveBoardId);
       }
 
       const res = await api.get(`/tasks/search?${params.toString()}`);
@@ -34,7 +37,7 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
     } catch (err) {
       return [];
     }
-  }, [includeTasks, boardId]);
+  }, [includeTasks, effectiveBoardId]);
 
   const handleSearch = useCallback(async (query) => {
     setInputValue(query);
@@ -55,12 +58,13 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
   useEffect(() => {
     if (!autoLoad) return;
 
-    if (boardId) {
+    if (effectiveBoardId) {
       handleSearch(''); 
       return;
     }
-    const boardMatch = location.pathname.match(/kanban\/(.+)$/);
-    const taskMatch = location.pathname.match(/tasks\/(.+)$/);
+
+    const taskMatch = location.pathname.match(/\/tasks\/([^/]+)/);
+    const boardMatch = location.pathname.match(/\/kanban\/([^/]+)/);
 
     const loadInitialSelection = async () => {
       try {
@@ -72,12 +76,8 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
           setTasks([res.data]);
           setBoards([]);
         } else if (boardMatch) {
-          const id = boardMatch[1];
-          setSearchValue(id);
-          setInputValue('');
-          const res = await api.get(`/boards/${id}`);
-          setBoards([res.data]);
-          setTasks([]);
+           setSearchValue(undefined);
+           setInputValue('');
         } else {
           setSearchValue(undefined);
           setInputValue('');
@@ -89,7 +89,7 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
     };
 
     loadInitialSelection();
-  }, [location.pathname, autoLoad, boardId, handleSearch]);
+  }, [location.pathname, autoLoad, effectiveBoardId, handleSearch]);
 
   return {
     boards,
@@ -102,6 +102,7 @@ export function useTaskSearch({ initialQuery = '', includeBoards = true, include
     setBoards,
     setTasks,
     navigate,
-    location
+    location,
+    effectiveBoardId 
   };
 }

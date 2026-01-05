@@ -52,6 +52,8 @@ const boardSlice = createSlice({
           id: b._id || b.id,
           name: b.name,
           key: b.key,
+          flag: b.flag || 'public',
+          members: b.members || [],
         }));
         if (page && page > 1) {
           state.boards = [...state.boards, ...mappedBoards];
@@ -65,7 +67,13 @@ const boardSlice = createSlice({
       .addCase(fetchBoards.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(createBoard.fulfilled, (state, action) => {
         const b = action.payload;
-        state.boards.push({ id: b._id || b.id, name: b.name, key: b.key });
+        state.boards.push({
+          id: b._id || b.id,
+          name: b.name,
+          key: b.key,
+          flag: b.flag || 'public',
+          members: b.members || [],
+        });
       })
       .addCase(deleteBoardAsync.fulfilled, (state, action) => {
         state.boards = state.boards.filter((b) => b.id !== action.payload);

@@ -18,8 +18,8 @@ const Home = () => {
   const { lastBoardRef, page, hasMore, loading } = useBoardPagination();
 
 
-  const handleCreateBoard = (boardName) => {
-    dispatch(createBoard({ name: boardName }));
+  const handleCreateBoard = (boardData) => {
+    dispatch(createBoard(boardData));
   };
 
   const handleDeleteBoard = (boardId) => {

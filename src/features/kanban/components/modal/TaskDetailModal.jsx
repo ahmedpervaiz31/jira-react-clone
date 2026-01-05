@@ -26,7 +26,6 @@ export const TaskDetailModal = ({ visible, task, onClose, onDelete, onUpdateDepe
 
   const allBoardTasks = useSelector(state => selectTasksByBoard(state, boardId));
 
-  // Use local board task search for dependencies (like AddTaskModal)
   const {
     tasks: searchTasks,
     inputValue: depSearchValue,

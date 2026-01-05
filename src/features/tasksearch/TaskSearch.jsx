@@ -1,86 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Select } from 'antd';
-import { useNavigate, useLocation } from 'react-router-dom';
-import api from '../../utils/api'; 
 import styles from './TaskSearch.module.css';
+import { useTaskSearch } from './useTaskSearch';
 
 const { Option, OptGroup } = Select;
 
-const TaskSearch = ({ onItemSelect, autoFocus }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [boards, setBoards] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [searchValue, setSearchValue] = useState(undefined);
-  const [inputValue, setInputValue] = useState('');
-
-  const fetchBoards = async (query) => {
-    try {
-      const res = await api.get(`/boards/search?q=${encodeURIComponent(query || '')}`);
-      return res.data;
-    } catch (err) {
-      return [];
-    }
-  };
-  
-  const fetchTasks = async (query) => {
-    try {
-      const res = await api.get(`/tasks/search?q=${encodeURIComponent(query || '')}`);
-      return res.data;
-    } catch (err) {
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    const boardMatch = location.pathname.match(/kanban\/(.+)$/);
-    const taskMatch = location.pathname.match(/tasks\/(.+)$/);
-
-    const loadInitialSelection = async () => {
-      try {
-        if (taskMatch) {
-          const id = taskMatch[1];
-          setSearchValue(id);
-          setInputValue('');
-          const res = await api.get(`/tasks/${id}`);
-          setTasks([res.data]);
-          setBoards([]);
-        } else if (boardMatch) {
-          const id = boardMatch[1];
-          setSearchValue(id);
-          setInputValue('');
-          const res = await api.get(`/boards/${id}`); 
-          setBoards([res.data]);
-          setTasks([]);
-        } else {
-          setSearchValue(undefined);
-          setInputValue('');
-        }
-      } catch (err) {
-        setSearchValue(undefined);
-        setInputValue('');
-      }
-    };
-
-    loadInitialSelection();
-  }, [location.pathname]);
-
-  const handleSearch = async (query) => {
-    setInputValue(query);
-    
-    try {
-      const [boardsRes, tasksRes] = await Promise.all([
-        fetchBoards(query),
-        fetchTasks(query)
-      ]);
-      setBoards(boardsRes || []);
-      setTasks(tasksRes || []);
-    } catch (err) {
-      setBoards([]);
-      setTasks([]);
-    }
-  };
+const TaskSearch = ({ onItemSelect, autoFocus, boardId = null }) => {
+  const {
+    boards,
+    tasks,
+    searchValue,
+    inputValue,
+    handleSearch,
+    navigate,
+    setInputValue,
+    effectiveBoardId 
+  } = useTaskSearch({ 
+    autoLoad: true,
+    boardId 
+  });
 
   const handleSelect = (value, option) => {
     if (!value) {
@@ -92,9 +30,7 @@ const TaskSearch = ({ onItemSelect, autoFocus }) => {
     } else {
       navigate(`/tasks/${value}`);
     }
-    
-    setInputValue(''); 
-    
+    setInputValue('');
     if (onItemSelect) onItemSelect();
   };
 
@@ -103,12 +39,12 @@ const TaskSearch = ({ onItemSelect, autoFocus }) => {
       className={styles.searchInput}
       showSearch
       filterOption={false}
-      placeholder="Search Boards or Tasks..."
+      placeholder={effectiveBoardId ? "Search tasks in this board..." : "Search Boards or Tasks..."}
       value={searchValue}
       searchValue={inputValue}
       onSearch={handleSearch}
       onChange={handleSelect}
-      onFocus={() => handleSearch('')}
+      onFocus={() => handleSearch(inputValue || '')}
       onBlur={() => setInputValue('')}
       style={{ width: '100%' }}
       allowClear
@@ -118,21 +54,24 @@ const TaskSearch = ({ onItemSelect, autoFocus }) => {
       defaultActiveFirstOption={false}
       suffixIcon={null}
     >
-      <OptGroup label="Boards">
-        {boards.map(board => (
-          <Option
-            key={board.id || board._id}
-            value={board.id || board._id}
-            data-type="board"
-            label={board.name}
-          >
-            <div className={styles.optionLabel}>
-              <span>{board.name}</span>
-              <span className={styles.typeLabel}>{board.key}</span>
-            </div>
-          </Option>
-        ))}
-      </OptGroup>
+      {!effectiveBoardId && boards.length > 0 && (
+        <OptGroup label="Boards">
+          {boards.map(board => (
+            <Option
+              key={board.id || board._id}
+              value={board.id || board._id}
+              data-type="board"
+              label={board.name}
+            >
+              <div className={styles.optionLabel}>
+                <span>{board.name}</span>
+                <span className={styles.typeLabel}>{board.key}</span>
+              </div>
+            </Option>
+          ))}
+        </OptGroup>
+      )}
+
       <OptGroup label="Tasks">
         {tasks.map(task => (
           <Option

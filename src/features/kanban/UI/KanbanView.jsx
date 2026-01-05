@@ -10,6 +10,7 @@ const { Title } = Typography;
 
 
 const KanbanView = ({
+  boardId,
   title,
   tasks,
   columnsConfig,
@@ -52,22 +53,24 @@ const KanbanView = ({
               const colLoading = tasksLoading && tasksLoading[col.id];
               const colHasMore = tasksHasMore && tasksHasMore[col.id];
               const colTasks = getTasksForColumn(col.id);
-              const displayedCount = colTasks.length;
-              const totalCount = (tasksTotal && typeof tasksTotal[col.id] === 'number') ? tasksTotal[col.id] : displayedCount;
+              
+              const totalCount = (tasksTotal && typeof tasksTotal[col.id] === 'number') ? tasksTotal[col.id] : colTasks.length;
+              const displayedCount = Math.min(colTasks.length, totalCount);
+
               return (
                 <Col key={col.id} span={8} className={styles.column}>
                   <BoardColumn
                     title={col.title}
                     status={col.id}
                     tasks={colTasks}
-                    tasksTotal={tasksTotal[col.id]}
+                      tasksTotal={totalCount}
                     onAddTask={onAddTask}
                     onDeleteTask={onDeleteTask}
                     onOpenDetail={onOpenTaskDetail}
                     onOpenAdd={onOpenAddModal}
                   />
                   <div className={styles.paginationContainer}>
-                    <span className={styles.displayCount}>{`${displayedCount} out of ${totalCount} displayed`}</span>
+                      <span className={styles.displayCount}>{`${displayedCount} out of ${totalCount} displayed`}</span>
                     {colHasMore ? (
                       <button
                         className={styles.loadMoreBtn}
@@ -97,6 +100,7 @@ const KanbanView = ({
         status={addStatus}
         onClose={onCloseAddModal}
         onAdd={onAddTask}
+        boardId={boardId}
       />
     </div>
   );

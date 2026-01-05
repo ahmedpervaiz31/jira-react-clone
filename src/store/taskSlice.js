@@ -23,36 +23,42 @@ export const getTasksByAssigneeAsync = createAsyncThunk('tasks/getTasksByAssigne
 );
 
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks',
-  async ({ boardId, status, page = 1, limit = 12 }, { rejectWithValue }) => {
+  async ({ boardId, status, skip = 0, limit = 12 }, { rejectWithValue }) => {
     try {
-      const res = await api.get('/tasks', { params: { boardId, status, page, limit } });
+      const res = await api.get('/tasks', { 
+        params: { 
+          boardId, 
+          status, 
+          limit, 
+          skip 
+        } 
+      });
       return { ...res.data, boardId, status };
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
   },
   {
-    condition: ({ boardId, status, page } = {}, { getState }) => {
-      try {
-        const s = getState().tasks;
-        if (!boardId || !status) return false;
-
-        const alreadySearching = s.tasksLoadingByBoard?.[boardId]?.[status];
-        const curPage = s.tasksPage?.[boardId]?.[status] || 0;
-
-        // if already searching, don't start another search
-        if (alreadySearching) 
-          return false;
-        if (page <= curPage) 
-          return false;
-
-        return true;
-      } catch (e) {
-        return true;
+    condition: ({ boardId, status }, { getState }) => {
+      const { tasks } = getState();
+      const isColumnLoading = tasks.tasksLoadingByBoard?.[boardId]?.[status];
+      
+      if (isColumnLoading) {
+        return false; 
       }
-    },
+    } 
   }
 );
+
+
+export const getTaskById = createAsyncThunk('tasks/getTaskById', async ({ taskId }, { rejectWithValue }) => {
+  try {
+    const res = await api.get(`/tasks/${taskId}`);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+})
 
 export const createTask = createAsyncThunk('tasks/createTask', async (payload, { rejectWithValue }) => {
   try {
@@ -72,6 +78,7 @@ export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async ({ tas
   }
 });
 
+
 export const moveTaskAsync = createAsyncThunk('tasks/moveTask', async ({ taskId, status, order }, { rejectWithValue }) => {
   try {
     const res = await api.put(`/tasks/${taskId}`, { status, order });
@@ -81,13 +88,48 @@ export const moveTaskAsync = createAsyncThunk('tasks/moveTask', async ({ taskId,
   }
 });
 
+export const batchMoveTasksAsync = createAsyncThunk('tasks/batchMove', async (moves, { rejectWithValue }) => {
+  try {
+    const res = await api.post('/tasks/batch-move', { moves });
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
+
+const moveTaskTimeouts = {};
+let pendingMoves = {};
+
+export const moveTaskRateLimit = ({ taskId, status, order }) => (dispatch) => {
+  pendingMoves[taskId] = { taskId, status, order };
+
+  if (moveTaskTimeouts['batch']) 
+    clearTimeout(moveTaskTimeouts['batch']);
+  
+  moveTaskTimeouts['batch'] = setTimeout(() => {
+    const moves = Object.values(pendingMoves);
+    if (moves.length > 0) {
+      dispatch(batchMoveTasksAsync(moves));
+      pendingMoves = {};
+    }
+    moveTaskTimeouts['batch'] = null;
+  }, 500);
+};
+
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
     setTasksLocal: (state, action) => {
-      const { boardId, tasks } = action.payload;
+      const { boardId, tasks, totals } = action.payload;
       state.tasksByBoard[boardId] = tasks;
+      
+      if (totals) {
+        state.tasksTotal[boardId] = {
+          ...state.tasksTotal[boardId],
+          ...totals
+        };
+      }
     },
   },
   extraReducers: (builder) => {
@@ -131,10 +173,24 @@ const taskSlice = createSlice({
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.loading = false;
-        const { items, total, page, hasMore, boardId, status } = action.payload || {};
+        
+        const { boardId, status, skip } = action.meta.arg || {};
+        const { items, total, page, hasMore } = action.payload || {};
 
         if (!state.tasksByBoard[boardId]) state.tasksByBoard[boardId] = [];
-        const mappedTasks = (items || []).map((t) => ({
+
+        const tasksInOtherCols = state.tasksByBoard[boardId].filter(t => t.status !== status);
+        const otherColIds = new Set(tasksInOtherCols.map(t => t.id));
+
+        let validItems = (items || []).filter(t => !otherColIds.has(t._id || t.id));
+
+        const filteredCount = (items || []).length - validItems.length;
+        const adjustedTotal = (total || 0) - filteredCount;
+
+        const currentTasks = state.tasksByBoard[boardId].filter((t) => t.status === status);
+        let maxOrder = currentTasks.length > 0 ? Math.max(...currentTasks.map(t => t.order ?? -1)) : -1;
+
+        const mappedTasks = validItems.map((t, idx) => ({
           id: t._id || t.id,
           title: t.title,
           status: t.status,
@@ -142,29 +198,35 @@ const taskSlice = createSlice({
           description: t.description,
           dueDate: t.dueDate,
           createdAt: t.createdAt,
-          order: t.order,
+          order: maxOrder + idx + 1, 
           displayId: t.displayId,
+          dependencies: t.dependencies || [],
         }));
 
-        if (!state.tasksPage[boardId]) 
-            state.tasksPage[boardId] = {};
-        if (!state.tasksHasMore[boardId]) 
-            state.tasksHasMore[boardId] = {};
-        if (!state.tasksTotal[boardId]) 
-            state.tasksTotal[boardId] = {};
-        if (page && page > 1) {
-            state.tasksByBoard[boardId].push(...mappedTasks);
+        if (!state.tasksPage[boardId]) state.tasksPage[boardId] = {};
+        if (!state.tasksHasMore[boardId]) state.tasksHasMore[boardId] = {};
+        if (!state.tasksTotal[boardId]) state.tasksTotal[boardId] = {};
+
+        const isLoadMore = skip && skip > 0;
+
+        if (isLoadMore) {
+          const existingIds = new Set(state.tasksByBoard[boardId].map(t => t.id));
+          const newTasks = mappedTasks.filter(t => !existingIds.has(t.id));
+          state.tasksByBoard[boardId].push(...newTasks);
         } else {
-            state.tasksByBoard[boardId] = [
-                ...state.tasksByBoard[boardId].filter((t) => t.status !== status),
-                ...mappedTasks
-            ];
+          state.tasksByBoard[boardId] = [
+            ...state.tasksByBoard[boardId].filter((t) => t.status !== status),
+            ...mappedTasks
+          ];
         }
-        state.tasksPage[boardId][status] = page || 1;
+
+        state.tasksPage[boardId][status] = page || 1; 
         state.tasksHasMore[boardId][status] = hasMore !== undefined ? hasMore : false;
-        state.tasksTotal[boardId][status] = total || 0;
+        
+        state.tasksTotal[boardId][status] = adjustedTotal;
+
         if (boardId && status && state.tasksLoadingByBoard[boardId]) {
-          state.tasksLoadingByBoard[boardId][status] = false;
+            state.tasksLoadingByBoard[boardId][status] = false;
         }
       })
       .addCase(fetchTasks.rejected, (state, action) => { 
@@ -190,6 +252,7 @@ const taskSlice = createSlice({
           createdAt: t.createdAt,
           order: t.order,
           displayId: t.displayId,
+          dependencies: t.dependencies || [], 
         });
       })
       .addCase(deleteTaskAsync.fulfilled, (state, action) => {

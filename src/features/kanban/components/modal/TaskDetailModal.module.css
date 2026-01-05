@@ -1,3 +1,41 @@
+.dependenciesSection {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.dependenciesTitle {
+  color: var(--color-secondary) !important;
+  margin-bottom: 10px !important;
+}
+
+.dependenciesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dependencyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  color: var(--color-primary) !important;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dependencyName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.dependencyId {
+  font-size: 12px;
+  color: var(--color-primary);
+  background: var(--bg-primary);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
 .modalFooter {
   display: flex;
   justify-content: flex-end;

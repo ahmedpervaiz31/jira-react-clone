@@ -1,3 +1,7 @@
+.blockedTask {
+  border-right: 4px solid #e53935;
+  background-clip: padding-box;
+}
 .loadingText {
   color: var(--text-primary);
   font-size: 14px;

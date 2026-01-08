@@ -6,9 +6,10 @@ import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG } from '../../../utils/constants';
 import KanbanView from './KanbanView';
 import styles from './KanbanView.module.css'; 
-import { createTask, deleteTaskAsync, moveTaskRateLimit, setTasksLocal, 
-        fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
+import { createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, 
+  fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
 import { selectBoards } from '../../../store/boardSlice';
+import { getIntermediateRank } from '../../../utils/lexorank';
 
 const EMPTY_OBJ = {};
 
@@ -42,10 +43,6 @@ export const KanbanApp = () => {
   const lastValidTotalsRef = useRef({});
 
   const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null, dependencies = []) => {
-    const tasksInColumn = allTasks.filter(t => t.status === status);
-    const maxOrder = tasksInColumn.length > 0
-      ? Math.max(...tasksInColumn.map(t => (t.order !== undefined ? t.order : -1)))
-      : -1;
     const payload = {
       title,
       status,
@@ -53,7 +50,6 @@ export const KanbanApp = () => {
       assignedTo,
       description,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      order: maxOrder + 1,
       dependencies 
     };
     dispatch(createTask(payload));
@@ -100,91 +96,69 @@ export const KanbanApp = () => {
     if (!destination) return;
 
     const task = allTasks.find(t => t.id === draggableId);
-    if (!task) return;
+    if (!task || (source.droppableId === destination.droppableId && source.index === destination.index)) {
+      return;
+    }
 
-    lastValidTasksRef.current = [...allTasks];
-    lastValidTotalsRef.current = { ...tasksTotal };
+    // 1. Identify neighbors in the destination column
+    const destColTasks = allTasks
+      .filter(t => t.status === destination.droppableId && t.id !== draggableId)
+      .sort((a, b) => a.order.localeCompare(b.order));
+
+    const prevTask = destColTasks[destination.index - 1];
+    const nextTask = destColTasks[destination.index]; // Currently at the target spot
+
+    // 2. Generate an optimistic temporary rank
+    const tempRank = getIntermediateRank(
+      prevTask ? prevTask.order : null,
+      nextTask ? nextTask.order : null
+    );
+
+    // 3. Create the updated task object
+    const optimisticallyUpdatedTask = { 
+      ...task, 
+      status: destination.droppableId, 
+      order: tempRank 
+    };
+
+    // 4. Update the local list
+    const otherTasks = allTasks.filter(t => t.id !== draggableId);
+    const updatedTasks = [...otherTasks, optimisticallyUpdatedTask];
+
+    dispatch(setTasksLocal({
+      boardId: kanbanId,
+      tasks: updatedTasks,
+      totals: tasksTotal
+    }));
 
     const isMovingToNewCol = source.droppableId !== destination.droppableId;
-    if (isMovingToNewCol && (destination.droppableId === 'in_progress' || destination.droppableId === 'done') &&
-      Array.isArray(task.dependencies) && task.dependencies.length > 0) {
-      const depStatus = await areDependenciesReady(task.id, destination.droppableId);
-      if (!depStatus.ready) {
-        setDepBlockModal({ visible: true, blockingTasks: depStatus.blocking || [] });
-        setTimeout(() => {
+    if (isMovingToNewCol && (destination.droppableId === 'in_progress' || destination.droppableId === 'done')) {
+      if (Array.isArray(task.dependencies) && task.dependencies.length > 0) {
+        const depStatus = await areDependenciesReady(task.id, destination.droppableId);
+        
+        if (!depStatus.ready) {
+          setDepBlockModal({ visible: true, blockingTasks: depStatus.blocking || [] });
           dispatch(setTasksLocal({
             boardId: kanbanId,
             tasks: lastValidTasksRef.current,
             totals: lastValidTotalsRef.current
           }));
-        }, 350);
-        return;
+          return;
+        }
       }
     }
 
-    let updatedTasks = [...allTasks];
-    const updatedTasksTotal = { ...tasksTotal };
-
-    if (source.droppableId === destination.droppableId) {
-      // same col
-      if (source.index === destination.index) return;
-
-      const columnTasks = updatedTasks
-        .filter(t => t.status === source.droppableId)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      const [moved] = columnTasks.splice(source.index, 1);
-      columnTasks.splice(destination.index, 0, moved);
-
-      columnTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) {
-          updatedTasks[index] = { ...updatedTasks[index], order: idx };
-        }
-      });
-    } else {
-      // move to other col
-      const prevSource = updatedTasksTotal[source.droppableId] || 0;
-      updatedTasksTotal[source.droppableId] = Math.max(prevSource - 1, 0);
-
-      const prevDest = updatedTasksTotal[destination.droppableId] || 0;
-      updatedTasksTotal[destination.droppableId] = prevDest + 1;
-
-      const sourceTasks = updatedTasks
-        .filter(t => t.status === source.droppableId && t.id !== task.id)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      sourceTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) updatedTasks[index] = { ...updatedTasks[index], order: idx };
-      });
-
-      const destTasks = updatedTasks
-        .filter(t => t.status === destination.droppableId)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      const movedTask = { ...task, status: destination.droppableId };
-
-      destTasks.splice(destination.index, 0, movedTask);
-
-      destTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) {
-          updatedTasks[index] = { ...updatedTasks[index], order: idx, status: destination.droppableId };
-        }
-      });
-    }
-    //update tasks and total together
-    dispatch(setTasksLocal({
-      boardId: kanbanId,
-      tasks: updatedTasks,
-      totals: updatedTasksTotal
+  dispatch(moveTaskAsync({
+      taskId: task.id,
+      status: destination.droppableId,
+      prevRank: prevTask ? prevTask.order : null,
+      nextRank: nextTask ? nextTask.order : null
     }));
-
-    updatedTasks.forEach((t) => {
-      dispatch(moveTaskRateLimit({ taskId: t.id, status: t.status, order: t.order }));
-    });
   };
+  useEffect(() => {
+    lastValidTasksRef.current = allTasks;
+    lastValidTotalsRef.current = tasksTotal;
+  }, [allTasks, tasksTotal]);
 
   if (!board) {
     if (loading || boards.length === 0) {

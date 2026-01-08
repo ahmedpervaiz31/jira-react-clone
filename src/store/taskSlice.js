@@ -79,42 +79,14 @@ export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async ({ tas
 });
 
 
-export const moveTaskAsync = createAsyncThunk('tasks/moveTask', async ({ taskId, status, order }, { rejectWithValue }) => {
+export const moveTaskAsync = createAsyncThunk('tasks/moveTask', async ({ taskId, status, prevRank, nextRank }, { rejectWithValue }) => {
   try {
-    const res = await api.put(`/tasks/${taskId}`, { status, order });
+    const res = await api.put(`/tasks/${taskId}/move`, { status, prevRank, nextRank });
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response?.data || err.message);
   }
 });
-
-export const batchMoveTasksAsync = createAsyncThunk('tasks/batchMove', async (moves, { rejectWithValue }) => {
-  try {
-    const res = await api.post('/tasks/batch-move', { moves });
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response?.data || err.message);
-  }
-});
-
-const moveTaskTimeouts = {};
-let pendingMoves = {};
-
-export const moveTaskRateLimit = ({ taskId, status, order }) => (dispatch) => {
-  pendingMoves[taskId] = { taskId, status, order };
-
-  if (moveTaskTimeouts['batch']) 
-    clearTimeout(moveTaskTimeouts['batch']);
-  
-  moveTaskTimeouts['batch'] = setTimeout(() => {
-    const moves = Object.values(pendingMoves);
-    if (moves.length > 0) {
-      dispatch(batchMoveTasksAsync(moves));
-      pendingMoves = {};
-    }
-    moveTaskTimeouts['batch'] = null;
-  }, 500);
-};
 
 const taskSlice = createSlice({
   name: 'tasks',
@@ -188,8 +160,7 @@ const taskSlice = createSlice({
         const adjustedTotal = (total || 0) - filteredCount;
 
         const currentTasks = state.tasksByBoard[boardId].filter((t) => t.status === status);
-        let maxOrder = currentTasks.length > 0 ? Math.max(...currentTasks.map(t => t.order ?? -1)) : -1;
-
+        
         const mappedTasks = validItems.map((t, idx) => ({
           id: t._id || t.id,
           title: t.title,
@@ -198,7 +169,7 @@ const taskSlice = createSlice({
           description: t.description,
           dueDate: t.dueDate,
           createdAt: t.createdAt,
-          order: maxOrder + idx + 1, 
+          order: t.order,
           displayId: t.displayId,
           dependencies: t.dependencies || [],
         }));
@@ -269,6 +240,12 @@ const taskSlice = createSlice({
         if (idx >= 0) {
           state.tasksByBoard[boardId][idx] = { ...state.tasksByBoard[boardId][idx], status: t.status, order: t.order };
         }
+        state.tasksByBoard[boardId].sort((a, b) => {
+          if (a.status !== b.status) {
+            return a.status.localeCompare(b.status);
+          }
+          return a.order.localeCompare(b.order);
+        });
       });
   },
 });

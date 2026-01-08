@@ -100,28 +100,23 @@ export const KanbanApp = () => {
       return;
     }
 
-    // 1. Identify neighbors in the destination column
     const destColTasks = allTasks
       .filter(t => t.status === destination.droppableId && t.id !== draggableId)
-      .sort((a, b) => a.order.localeCompare(b.order));
 
     const prevTask = destColTasks[destination.index - 1];
-    const nextTask = destColTasks[destination.index]; // Currently at the target spot
+    const nextTask = destColTasks[destination.index]; 
 
-    // 2. Generate an optimistic temporary rank
     const tempRank = getIntermediateRank(
       prevTask ? prevTask.order : null,
       nextTask ? nextTask.order : null
     );
 
-    // 3. Create the updated task object
     const optimisticallyUpdatedTask = { 
       ...task, 
       status: destination.droppableId, 
       order: tempRank 
     };
 
-    // 4. Update the local list
     const otherTasks = allTasks.filter(t => t.id !== draggableId);
     const updatedTasks = [...otherTasks, optimisticallyUpdatedTask];
 

@@ -238,14 +238,12 @@ const taskSlice = createSlice({
         if (!state.tasksByBoard[boardId]) return;
         const idx = state.tasksByBoard[boardId].findIndex((x) => x.id === (t._id || t.id));
         if (idx >= 0) {
-          state.tasksByBoard[boardId][idx] = { ...state.tasksByBoard[boardId][idx], status: t.status, order: t.order };
+          state.tasksByBoard[boardId][idx] = { 
+            ...state.tasksByBoard[boardId][idx], 
+            status: t.status, 
+            order: t.order 
+          };
         }
-        state.tasksByBoard[boardId].sort((a, b) => {
-          if (a.status !== b.status) {
-            return a.status.localeCompare(b.status);
-          }
-          return a.order.localeCompare(b.order);
-        });
       });
   },
 });

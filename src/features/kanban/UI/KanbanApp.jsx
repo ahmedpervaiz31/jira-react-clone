@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DependencyBlockModal from '../components/modal/DependencyBlockModal';
-import { areDependenciesReady } from '../../../utils/dependencyHelpers';
 import { useSelector, useDispatch } from 'react-redux';
+import { socket } from '../../../utils/socket';
+import DependencyBlockModal from '../components/modal/DependencyBlockModal';
+import ForceRefreshModal from '../../../components/ForceRefreshModal';
+import BoardDeletedRedirectModal from '../components/modal/BoardDeletedRedirectModal';
+import BoardPresence from '../components/BoardPresence';
+import { areDependenciesReady } from '../../../utils/dependencyHelpers';
 import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG } from '../../../utils/constants';
 import KanbanView from './KanbanView';
@@ -15,6 +19,7 @@ const EMPTY_OBJ = {};
 
 export const KanbanApp = () => {
   const { kanbanId } = useParams();
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const boards = useSelector(selectBoards);
   const board = boards.find((b) => b.id === kanbanId);
@@ -25,6 +30,60 @@ export const KanbanApp = () => {
   
   const tasksTotal = useSelector((state) => state.tasks.tasksTotal[kanbanId]) || EMPTY_OBJ;
   const tasksLoading = useSelector((state) => selectTasksLoadingByBoard(state, kanbanId));
+  
+  const [boardUsers, setBoardUsers] = useState([]);
+  const [forceRefresh, setForceRefresh] = useState({ visible: false, reason: '' });
+  const [boardDeleted, setBoardDeleted] = useState({ visible: false, reason: '' });
+
+  useEffect(() => {
+    const taskEvents = ['task:created', 'task:updated', 'task:deleted', 'task:moved'];
+    function handleTaskEvent({ boardId, userId }) {
+      if (
+        boardId === kanbanId && userId &&
+        user?.id && userId !== user.id
+      ) {
+        setForceRefresh({ visible: true, reason: '' });
+      }
+    }
+    function handleBoardDeleted({ boardId, userId }) {
+      if (
+        boardId === kanbanId && userId &&
+        user?.id && userId !== user.id
+      ) {
+        setBoardDeleted({ visible: true, reason: 'This board was deleted by another user. You will be redirected to the main page.' });
+      }
+    }
+    for (const event of taskEvents) {
+      socket.on(event, handleTaskEvent);
+    }
+    socket.on('board:deleted', handleBoardDeleted);
+    return () => {
+      for (const event of taskEvents) {
+        socket.off(event, handleTaskEvent);
+      }
+      socket.off('board:deleted', handleBoardDeleted);
+    };
+  }, [kanbanId, user?.id]);
+
+  useEffect(() => {
+    function handlePresence({ boardId, users }) {
+      if (boardId === kanbanId) setBoardUsers(users || []);
+    }
+    socket.on('user:presence', handlePresence);
+    return () => {
+      socket.off('user:presence', handlePresence);
+      setBoardUsers([]);
+    };
+  }, [kanbanId]);
+
+  useEffect(() => {
+    if (!kanbanId || !user) 
+      return;
+    if (!socket.connected) 
+      socket.connect();
+    socket.emit('join_board', { boardId: kanbanId, user });
+    return () => { socket.emit('leave_board'); };
+  }, [kanbanId, user]);
 
   useEffect(() => {
     if (!kanbanId) return;
@@ -164,6 +223,11 @@ export const KanbanApp = () => {
   
   return (
     <>
+      <ForceRefreshModal visible={forceRefresh.visible} reason={forceRefresh.reason} />
+      <BoardDeletedRedirectModal visible={boardDeleted.visible} reason={boardDeleted.reason} />
+      <div style={{ position: 'relative', minHeight: 48 }}>
+        <BoardPresence users={boardUsers} currentUserId={user?.id} />
+      </div>
       <KanbanView
         boardId={kanbanId}
         title={board.name}

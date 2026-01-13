@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/hooks/useAuth';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectBoards, fetchBoards, createBoard, deleteBoardAsync, selectBoardTotal } from '../../store/boardSlice';
 import { useBoardPagination } from './hooks/useBoardPagination';
 import styles from './Home.module.css';
-
+import { socket } from '../../utils/socket';
+import ForceRefreshModal from '../../components/ForceRefreshModal';
 import LoginView from './components/LoginView';
 import CreateBoard from './components/CreateBoard';
 import BoardItem from './components/BoardItem';
@@ -14,9 +15,28 @@ const Home = () => {
   const boards = useSelector(selectBoards);
   const dispatch = useDispatch();
   const total = useSelector(selectBoardTotal);
-  
   const { lastBoardRef, page, hasMore, loading } = useBoardPagination();
 
+  const [forceRefresh, setForceRefresh] = useState({ visible: false, reason: '' });
+
+  useEffect(() => {
+    function handleBoardEvent({ userId }) {
+      if (userId && user?.id && userId !== user.id) {
+        setForceRefresh({ visible: true, reason: '' });
+      }
+    }
+    function handleBoardDeleted({ userId }) {
+      if (userId && user?.id && userId !== user.id) {
+        setForceRefresh({ visible: true, reason: 'A board was deleted. Please refresh.' });
+      }
+    }
+    socket.on('board:created', handleBoardEvent);
+    socket.on('board:deleted', handleBoardDeleted);
+    return () => {
+      socket.off('board:created', handleBoardEvent);
+      socket.off('board:deleted', handleBoardDeleted);
+    };
+  }, [user?.id]);
 
   const handleCreateBoard = (boardData) => {
     dispatch(createBoard(boardData));
@@ -28,6 +48,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
+      <ForceRefreshModal visible={forceRefresh.visible} reason={forceRefresh.reason} />
       {!isAuthenticated ? (
         <LoginView />
       ) : (

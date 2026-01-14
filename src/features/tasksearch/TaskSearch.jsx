@@ -13,7 +13,8 @@ const TaskSearch = ({ onItemSelect, autoFocus, boardId = null }) => {
     inputValue,
     handleSearch,
     navigate,
-    setInputValue 
+    setInputValue,
+    effectiveBoardId 
   } = useTaskSearch({ 
     autoLoad: true,
     boardId 
@@ -38,7 +39,7 @@ const TaskSearch = ({ onItemSelect, autoFocus, boardId = null }) => {
       className={styles.searchInput}
       showSearch
       filterOption={false}
-      placeholder={boardId ? "Search tasks in this board..." : "Search Boards or Tasks..."}
+      placeholder={effectiveBoardId ? "Search tasks in this board..." : "Search Boards or Tasks..."}
       value={searchValue}
       searchValue={inputValue}
       onSearch={handleSearch}
@@ -53,7 +54,7 @@ const TaskSearch = ({ onItemSelect, autoFocus, boardId = null }) => {
       defaultActiveFirstOption={false}
       suffixIcon={null}
     >
-      {!boardId && boards.length > 0 && (
+      {!effectiveBoardId && boards.length > 0 && (
         <OptGroup label="Boards">
           {boards.map(board => (
             <Option

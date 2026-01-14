@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import DependencyBlockModal from '../components/modal/DependencyBlockModal';
-import { areDependenciesReady } from '../../../utils/dependencyHelpers';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { socket } from '../../../utils/socket';
+import DependencyBlockModal from '../components/modal/DependencyBlockModal';
+import ForceRefreshModal from '../../../components/ForceRefreshModal';
+import BoardDeletedRedirectModal from '../components/modal/BoardDeletedRedirectModal';
+import BoardPresence from '../components/BoardPresence';
+import { areDependenciesReady } from '../../../utils/dependencyHelpers';
 import { useParams } from 'react-router-dom';
 import { COLUMNS_CONFIG } from '../../../utils/constants';
 import KanbanView from './KanbanView';
 import styles from './KanbanView.module.css'; 
-import { createTask, deleteTaskAsync, moveTaskRateLimit, setTasksLocal, 
-        fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
-import { selectBoards } from '../../../store/boardSlice';
+import { createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, 
+  fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
+import { selectBoards, deleteBoardAsync, removeBoardLocal } from '../../../store/boardSlice';
+import { getIntermediateRank } from '../../../utils/lexorank';
 
 const EMPTY_OBJ = {};
 
 export const KanbanApp = () => {
   const { kanbanId } = useParams();
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const boards = useSelector(selectBoards);
   const board = boards.find((b) => b.id === kanbanId);
@@ -24,6 +30,61 @@ export const KanbanApp = () => {
   
   const tasksTotal = useSelector((state) => state.tasks.tasksTotal[kanbanId]) || EMPTY_OBJ;
   const tasksLoading = useSelector((state) => selectTasksLoadingByBoard(state, kanbanId));
+  
+  const [boardUsers, setBoardUsers] = useState([]);
+  const [forceRefresh, setForceRefresh] = useState({ visible: false, reason: '' });
+  const [boardDeleted, setBoardDeleted] = useState({ visible: false, reason: '' });
+
+  useEffect(() => {
+    const taskEvents = ['task:created', 'task:updated', 'task:deleted', 'task:moved'];
+    function handleTaskEvent({ boardId, userId }) {
+      if (
+        boardId === kanbanId && userId &&
+        user?.id && userId !== user.id
+      ) {
+        setForceRefresh({ visible: true, reason: '' });
+      }
+    }
+    function handleBoardDeleted({ boardId, userId }) {
+      if (
+        boardId === kanbanId && userId &&
+        user?.id && userId !== user.id
+      ) {
+        dispatch(removeBoardLocal(boardId));
+        setBoardDeleted({ visible: true, reason: 'This board was deleted by another user. You will be redirected to the main page.' });
+      }
+    }
+    for (const event of taskEvents) {
+      socket.on(event, handleTaskEvent);
+    }
+    socket.on('board:deleted', handleBoardDeleted);
+    return () => {
+      for (const event of taskEvents) {
+        socket.off(event, handleTaskEvent);
+      }
+      socket.off('board:deleted', handleBoardDeleted);
+    };
+  }, [kanbanId, user?.id]);
+
+  useEffect(() => {
+    function handlePresence({ boardId, users }) {
+      if (boardId === kanbanId) setBoardUsers(users || []);
+    }
+    socket.on('user:presence', handlePresence);
+    return () => {
+      socket.off('user:presence', handlePresence);
+      setBoardUsers([]);
+    };
+  }, [kanbanId]);
+
+  useEffect(() => {
+    if (!kanbanId || !user) 
+      return;
+    if (!socket.connected) 
+      socket.connect();
+    socket.emit('join_board', { boardId: kanbanId, user });
+    return () => { socket.emit('leave_board'); };
+  }, [kanbanId, user]);
 
   useEffect(() => {
     if (!kanbanId) return;
@@ -38,12 +99,10 @@ export const KanbanApp = () => {
   const [addVisible, setAddVisible] = useState(false);
   const [addStatus, setAddStatus] = useState(null);
   const [depBlockModal, setDepBlockModal] = useState({ visible: false, blockingTasks: [] });
+  const lastValidTasksRef = useRef([]);
+  const lastValidTotalsRef = useRef({});
 
-  const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null) => {
-    const tasksInColumn = allTasks.filter(t => t.status === status);
-    const maxOrder = tasksInColumn.length > 0
-      ? Math.max(...tasksInColumn.map(t => (t.order !== undefined ? t.order : -1)))
-      : -1;
+  const handleAddTask = (title, status, assignedTo = '', description = '', dueDate = null, dependencies = []) => {
     const payload = {
       title,
       status,
@@ -51,7 +110,7 @@ export const KanbanApp = () => {
       assignedTo,
       description,
       dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-      order: maxOrder + 1,
+      dependencies 
     };
     dispatch(createTask(payload));
   };
@@ -97,89 +156,81 @@ export const KanbanApp = () => {
     if (!destination) return;
 
     const task = allTasks.find(t => t.id === draggableId);
-    if (!task) return;
+    if (!task || (source.droppableId === destination.droppableId && source.index === destination.index)) {
+      return;
+    }
 
-    if ((destination.droppableId === 'in_progress' || destination.droppableId === 'done') && Array.isArray(task.dependencies) && task.dependencies.length > 0) {
-      const depStatus = await areDependenciesReady(task.id);
-      if (!depStatus.ready) {
-        setDepBlockModal({ visible: true, blockingTasks: depStatus.blocking || [] });
-        return;
+    const destColTasks = allTasks
+      .filter(t => t.status === destination.droppableId && t.id !== draggableId)
+
+    const prevTask = destColTasks[destination.index - 1];
+    const nextTask = destColTasks[destination.index]; 
+
+    const tempRank = getIntermediateRank(
+      prevTask ? prevTask.order : null,
+      nextTask ? nextTask.order : null
+    );
+
+    const optimisticallyUpdatedTask = { 
+      ...task, 
+      status: destination.droppableId, 
+      order: tempRank 
+    };
+
+    const otherTasks = allTasks.filter(t => t.id !== draggableId);
+    const updatedTasks = [...otherTasks, optimisticallyUpdatedTask];
+
+    dispatch(setTasksLocal({
+      boardId: kanbanId,
+      tasks: updatedTasks,
+      totals: tasksTotal
+    }));
+
+    const isMovingToNewCol = source.droppableId !== destination.droppableId;
+    if (isMovingToNewCol && (destination.droppableId === 'in_progress' || destination.droppableId === 'done')) {
+      if (Array.isArray(task.dependencies) && task.dependencies.length > 0) {
+        const depStatus = await areDependenciesReady(task.id, destination.droppableId);
+        
+        if (!depStatus.ready) {
+          setDepBlockModal({ visible: true, blockingTasks: depStatus.blocking || [] });
+          dispatch(setTasksLocal({
+            boardId: kanbanId,
+            tasks: lastValidTasksRef.current,
+            totals: lastValidTotalsRef.current
+          }));
+          return;
+        }
       }
     }
 
-    let updatedTasks = [...allTasks];
-    const updatedTasksTotal = { ...tasksTotal }; 
-
-    if (source.droppableId === destination.droppableId) {
-      // same col
-      if (source.index === destination.index) return;
-
-      const columnTasks = updatedTasks
-        .filter(t => t.status === source.droppableId)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      const [moved] = columnTasks.splice(source.index, 1);
-      columnTasks.splice(destination.index, 0, moved);
-
-      columnTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) {
-          updatedTasks[index] = { ...updatedTasks[index], order: idx };
-        }
-      });
-    } else {
-      // move to other col
-      const prevSource = updatedTasksTotal[source.droppableId] || 0;
-      updatedTasksTotal[source.droppableId] = Math.max(prevSource - 1, 0);
-
-      const prevDest = updatedTasksTotal[destination.droppableId] || 0;
-      updatedTasksTotal[destination.droppableId] = prevDest + 1;
-
-      const sourceTasks = updatedTasks
-        .filter(t => t.status === source.droppableId && t.id !== task.id) 
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      sourceTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) updatedTasks[index] = { ...updatedTasks[index], order: idx };
-      });
-
-      const destTasks = updatedTasks
-        .filter(t => t.status === destination.droppableId)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      const movedTask = { ...task, status: destination.droppableId };
-      
-      destTasks.splice(destination.index, 0, movedTask);
-
-      destTasks.forEach((t, idx) => {
-        const index = updatedTasks.findIndex(ut => ut.id === t.id);
-        if (index >= 0) {
-          updatedTasks[index] = { ...updatedTasks[index], order: idx, status: destination.droppableId };
-        }
-      });
-    }
-    //update tasks and total together
-    dispatch(setTasksLocal({ 
-        boardId: kanbanId, 
-        tasks: updatedTasks,
-        totals: updatedTasksTotal 
+  dispatch(moveTaskAsync({
+      taskId: task.id,
+      status: destination.droppableId,
+      prevRank: prevTask ? prevTask.order : null,
+      nextRank: nextTask ? nextTask.order : null
     }));
-
-    updatedTasks.forEach((t) => {
-      dispatch(moveTaskRateLimit({ taskId: t.id, status: t.status, order: t.order }));
-    });
   };
+  useEffect(() => {
+    lastValidTasksRef.current = allTasks;
+    lastValidTotalsRef.current = tasksTotal;
+  }, [allTasks, tasksTotal]);
 
+  if (boardDeleted.visible) {
+    return <BoardDeletedRedirectModal visible={boardDeleted.visible} reason={boardDeleted.reason} />;
+  }
   if (!board) {
     if (loading || boards.length === 0) {
       return <div className={styles.notFound}>Loading...</div>;
     }
     return <div className={styles.notFound}>Board not found</div>;
   }
-  
+
   return (
     <>
+      <ForceRefreshModal visible={forceRefresh.visible} reason={forceRefresh.reason} />
+      <div style={{ position: 'relative', minHeight: 48 }}>
+        <BoardPresence users={boardUsers} currentUserId={user?.id} />
+      </div>
       <KanbanView
         boardId={kanbanId}
         title={board.name}

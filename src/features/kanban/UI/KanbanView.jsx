@@ -35,9 +35,7 @@ const KanbanView = ({
   const getTasksForColumn = (status) => {
     return tasks
       .filter((t) => t.status === status)
-      .sort((a, b) => {
-        return a.order - b.order;
-      });
+      .sort((a, b) => a.order.localeCompare(b.order));
   };
 
   return (
@@ -63,7 +61,7 @@ const KanbanView = ({
                     title={col.title}
                     status={col.id}
                     tasks={colTasks}
-                      tasksTotal={totalCount}
+                    tasksTotal={totalCount}
                     onAddTask={onAddTask}
                     onDeleteTask={onDeleteTask}
                     onOpenDetail={onOpenTaskDetail}

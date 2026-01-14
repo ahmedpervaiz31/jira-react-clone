@@ -6,6 +6,7 @@ import styles from './AddTaskModal.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchUsersAsync, selectUserSearchResults, selectUserSearchLoading } from '../../../../store/userSlice';
 import { useTaskSearch } from '../../../tasksearch/useTaskSearch';
+import { selectTasksByBoard } from '../../../../store/taskSlice';
 
 const { TextArea } = Input;
 
@@ -17,6 +18,7 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd, boardId }) => {
   const [dueDate, setDueDate] = useState(null);
   const userOptions = useSelector(selectUserSearchResults);
   const fetchingUsers = useSelector(selectUserSearchLoading);
+  const boardTasks = useSelector(state => selectTasksByBoard(state, boardId));
 
   const {
     tasks: allTasks,
@@ -39,7 +41,10 @@ export const AddTaskModal = ({ visible, status, onClose, onAdd, boardId }) => {
   const handleOk = async () => {
     if (!title.trim() || !assignedTo.trim()) return;
 
-    const depCheck = await validateDependenciesOnAdd(title.trim(), dependencies, allTasks);
+    const validationPool = [...(allTasks || []), ...(boardTasks || [])];
+
+    const depCheck = await validateDependenciesOnAdd(title.trim(), dependencies, validationPool);
+    
     if (!depCheck.valid) {
       setDepError(depCheck.error || 'Invalid dependencies');
       return;

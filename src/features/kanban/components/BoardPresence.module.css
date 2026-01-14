@@ -1,0 +1,43 @@
+
+.presenceContainer {
+	position: absolute;
+	top: 16px;
+	right: 32px;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	z-index: 100;
+}
+
+.avatarWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid #fff;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+	object-fit: cover;
+	background: #eee;
+	cursor: pointer;
+}
+
+.overflowCircle {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: #d1d5db;
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 1rem;
+	border: 2px solid #fff;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+	cursor: pointer;
+}

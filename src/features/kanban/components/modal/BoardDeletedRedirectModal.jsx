@@ -7,7 +7,6 @@ export default function BoardDeletedRedirectModal({ visible, reason }) {
 
   useEffect(() => {
     if (visible) {
-      // Redirect after a short delay for user to see the message
       const timer = setTimeout(() => {
         navigate('/');
       }, 2000);

@@ -12,7 +12,7 @@ import KanbanView from './KanbanView';
 import styles from './KanbanView.module.css'; 
 import { createTask, deleteTaskAsync, moveTaskAsync, setTasksLocal, 
   fetchTasks, selectTasksByBoard, selectTasksLoadingByBoard } from '../../../store/taskSlice';
-import { selectBoards } from '../../../store/boardSlice';
+import { selectBoards, deleteBoardAsync, removeBoardLocal } from '../../../store/boardSlice';
 import { getIntermediateRank } from '../../../utils/lexorank';
 
 const EMPTY_OBJ = {};
@@ -50,6 +50,7 @@ export const KanbanApp = () => {
         boardId === kanbanId && userId &&
         user?.id && userId !== user.id
       ) {
+        dispatch(removeBoardLocal(boardId));
         setBoardDeleted({ visible: true, reason: 'This board was deleted by another user. You will be redirected to the main page.' });
       }
     }
@@ -214,17 +215,19 @@ export const KanbanApp = () => {
     lastValidTotalsRef.current = tasksTotal;
   }, [allTasks, tasksTotal]);
 
+  if (boardDeleted.visible) {
+    return <BoardDeletedRedirectModal visible={boardDeleted.visible} reason={boardDeleted.reason} />;
+  }
   if (!board) {
     if (loading || boards.length === 0) {
       return <div className={styles.notFound}>Loading...</div>;
     }
     return <div className={styles.notFound}>Board not found</div>;
   }
-  
+
   return (
     <>
       <ForceRefreshModal visible={forceRefresh.visible} reason={forceRefresh.reason} />
-      <BoardDeletedRedirectModal visible={boardDeleted.visible} reason={boardDeleted.reason} />
       <div style={{ position: 'relative', minHeight: 48 }}>
         <BoardPresence users={boardUsers} currentUserId={user?.id} />
       </div>

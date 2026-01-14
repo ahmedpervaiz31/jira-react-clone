@@ -41,7 +41,11 @@ export const deleteBoardAsync = createAsyncThunk('board/deleteBoard', async (boa
 const boardSlice = createSlice({
   name: 'board',
   initialState,
-  reducers: {},
+  reducers: {
+    removeBoardLocal: (state, action) => {
+      state.boards = state.boards.filter((b) => b.id !== action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBoards.pending, (state) => { state.loading = true; state.error = null; })
@@ -91,4 +95,5 @@ export const selectBoardPage = (state) => (state.board && typeof state.board.pag
 export const selectBoardHasMore = (state) => (state.board && typeof state.board.hasMore === 'boolean') ? state.board.hasMore : true;
 export const selectBoardLoading = (state) => (state.board && typeof state.board.loading === 'boolean') ? state.board.loading : false;
 export const selectBoardTotal = (state) => (state.board && typeof state.board.total === 'number') ? state.board.total : 0;
+export const { removeBoardLocal } = boardSlice.actions;
 export default boardSlice.reducer;

@@ -7,7 +7,7 @@ const DependencyBlockModal = ({ visible, onClose, blockingTasks }) => {
     <div className={styles.blockModal}>
       <div className={styles.modalContent}>
         <h3>Cannot Move Task</h3>
-        <p>One or more dependencies are not in progress or done. Please update the following tasks first:</p>
+        <p>One or more dependencies are not in progress or done</p>
         <ul>
           {blockingTasks && blockingTasks.map((t) => (
             <li key={t.id}>{t.title} 

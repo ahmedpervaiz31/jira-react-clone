@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectBoards, fetchBoards, createBoard, deleteBoardAsync, selectBoardTotal } from '../../store/boardSlice';
 import { useBoardPagination } from './hooks/useBoardPagination';
 import styles from './Home.module.css';
+import ChatBot from '../../components/chatbot/ChatBot';
 import { socket } from '../../utils/socket';
 import ForceRefreshModal from '../../components/ForceRefreshModal';
 import LoginView from './components/LoginView';
@@ -88,6 +89,7 @@ const Home = () => {
           </div>
         </>
       )}
+      <ChatBot />
     </div>
   );
 };

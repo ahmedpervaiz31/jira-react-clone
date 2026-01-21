@@ -6,6 +6,7 @@ import themeReducer from './themeSlice';
 import boardReducer from './boardSlice';
 import taskReducer from './taskSlice';
 import userReducer from './userSlice';
+import chatReducer from './chatSlice';
 
 const themePersistConfig = {
   key: 'theme',
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   board: boardReducer,
   tasks: taskReducer,
   users: userReducer,
+  chat: chatReducer,
 });
 
 export const store = configureStore({

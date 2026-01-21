@@ -19,4 +19,16 @@ api.interceptors.response.use(
   (error) => Promise.reject(error)
 );
 
+export async function fetchRagResponse(query, options = {}) {
+  try {
+    const token = options.token || localStorage.getItem('token');
+    const res = await api.post('/rag/search', { query }, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    return res.data;
+  } catch (err) {
+    return { error: err?.response?.data?.error || err.message };
+  }
+}
+
 export default api;

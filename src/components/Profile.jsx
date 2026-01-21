@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { getTasksByAssigneeAsync } from '../store/taskSlice';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import ChatBot from './chatbot/ChatBot';
 import styles from './Profile.module.css';
 
 const Profile = () => { 
@@ -56,6 +57,7 @@ const Profile = () => {
                     })
                 )}
             </div>
+            <ChatBot />
         </div>
     );
 };

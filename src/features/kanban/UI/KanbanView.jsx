@@ -5,6 +5,7 @@ import { BoardColumn } from '../components/Columns';
 import { TaskDetailModal } from '../components/modal/TaskDetailModal'
 import { AddTaskModal } from '../components/modal/AddTaskModal';
 import styles from './KanbanView.module.css';
+import ChatBot from '../../../components/chatbot/ChatBot';
 
 const { Title } = Typography;
 
@@ -100,6 +101,7 @@ const KanbanView = ({
         onAdd={onAddTask}
         boardId={boardId}
       />
+      <ChatBot />
     </div>
   );
 };

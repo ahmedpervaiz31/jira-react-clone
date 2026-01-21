@@ -1,3 +1,7 @@
+export const CHATBOT = {
+  INIT: "Hi! How can I help you?",
+};
+
 export const COLUMN_TYPES = {
   TODO: 'to_do',
   IN_PROGRESS: 'in_progress',

@@ -22,9 +22,16 @@ api.interceptors.response.use(
 export async function fetchRagResponse(query, options = {}) {
   try {
     const token = options.token || localStorage.getItem('token');
-    const res = await api.post('/rag/search', { query }, {
+    const body = { 
+        query,
+        boardId: options.boardId || null,
+        topK: options.topK || 10
+    };
+    
+    const res = await api.post('/rag/search', body, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
+
     return res.data;
   } catch (err) {
     return { error: err?.response?.data?.error || err.message };

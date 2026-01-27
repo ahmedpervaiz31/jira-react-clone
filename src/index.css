@@ -47,7 +47,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Reset default margins for titles and headings */
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0;
@@ -197,7 +196,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--border-subtle) !important;
 }
 
-/* Modal wrapper and overlay fixes */
 .ant-modal {
   z-index: 1000;
 }
@@ -250,7 +248,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--border-color) !important;
 }
 
-/* Form and Button styles */
 .ant-form-item-label > label {
   color: var(--text-primary) !important;
 }
@@ -272,8 +269,9 @@ h1, h2, h3, h4, h5, h6 {
 .ant-btn-text {
   color: var(--text-primary);
 }
-
-/* Avatar and Tag styles in dark mode */
+.ant-btn-text:hover {
+  color: var(--text-primary);
+}
 .ant-avatar {
   background-color: var(--text-secondary) !important;
 }

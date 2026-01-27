@@ -89,7 +89,7 @@ const Home = () => {
           </div>
         </>
       )}
-      <ChatBot />
+      {isAuthenticated && <ChatBot />}
     </div>
   );
 };

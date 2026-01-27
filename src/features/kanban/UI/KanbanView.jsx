@@ -102,6 +102,7 @@ const KanbanView = ({
         boardId={boardId}
       />
       <ChatBot />
+    {window.isAuthenticated && <ChatBot />}
     </div>
   );
 };

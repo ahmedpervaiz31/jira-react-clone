@@ -57,7 +57,8 @@ const Profile = () => {
                     })
                 )}
             </div>
-            <ChatBot />
+            
+            {user && <ChatBot />}
         </div>
     );
 };

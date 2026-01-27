@@ -19,12 +19,20 @@ export const sendChatMessage = createAsyncThunk(
             
             const state = getState();
             const activeBoardId = argBoardId || state.chat.boardId;
+            const history = state.chat.messages
+                .slice(1) 
+                .slice(-3) 
+                .map(msg => ({
+                    role: msg.from === 'bot' ? 'assistant' : 'user',
+                    content: msg.text
+                }));
 
             const token = localStorage.getItem('token');
-            const options = {};
-            
-            if (token) options.token = token;
-            if (activeBoardId) options.boardId = activeBoardId;
+            const options = {
+                history,
+                boardId: activeBoardId || null,
+                token: token || null
+            };
 
             const response = await fetchRagResponse(message, options);
             

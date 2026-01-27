@@ -25,7 +25,8 @@ export async function fetchRagResponse(query, options = {}) {
     const body = { 
         query,
         boardId: options.boardId || null,
-        topK: options.topK || 10
+        topK: options.topK || 10,
+        history: options.history || [] 
     };
     
     const res = await api.post('/rag/search', body, {
